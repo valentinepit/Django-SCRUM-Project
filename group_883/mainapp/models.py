@@ -20,11 +20,11 @@ class Article(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     tag = models.ForeignKey(Tag, on_delete=models.PROTECT, blank=True, null=True)
-    title = models.CharField(verbose_name='Заголовок', max_length=60)
+    title = models.CharField(verbose_name='Заголовок', max_length=250)
     short_desc = models.CharField(verbose_name='Краткое описание', max_length=500, blank=True)
     body = models.TextField(verbose_name='Текст')
     image = models.ImageField(upload_to='image_article', verbose_name='Фото', blank=True)
-    like = models.BigIntegerField(verbose_name='Количество лайков')
+    like = models.BigIntegerField(verbose_name='Количество лайков', default=0)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
 
     def __str__(self):
