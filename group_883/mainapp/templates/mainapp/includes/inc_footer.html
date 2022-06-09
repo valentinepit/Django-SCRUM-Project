@@ -5,31 +5,27 @@
         <div class="row">
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="block">
-                    <h1 class="block-title">Company Info</h1>
+                    <h1 class="block-title">Информация о компании</h1>
                     <div class="block-body">
                         <figure class="foot-logo">
                             <img src="{% static 'images/logo-light.png' %}" class="img-responsive" alt="Logo">
                         </figure>
                         <p class="brand-description"></p>
-                        <a href="page.html" class="btn btn-magz white">About Us <i
+                        <a href="page.html" class="btn btn-magz white">О нас<i
                                 class="ion-ios-arrow-thin-right"></i></a>
                     </div>
                 </div>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="block">
-                    <h1 class="block-title">Popular Tags
-                        <div class="right"><a href="#">See All <i class="ion-ios-arrow-thin-right"></i></a></div>
+                    <h1 class="block-title">Популярные теги
+                        <div class="right"><a href="#">Все <i class="ion-ios-arrow-thin-right"></i></a></div>
                     </h1>
                     <div class="block-body">
                         <ul class="tags">
-                            <li><a href="#">HTML5</a></li>
-                            <li><a href="#">CSS3</a></li>
-                            <li><a href="#">Bootstrap 3</a></li>
-                            <li><a href="#">Web Design</a></li>
-                            <li><a href="#">Creative Mind</a></li>
-                            <li><a href="#">Standing On The Train</a></li>
-                            <li><a href="#">at 6.00PM</a></li>
+                            {% for tag in tags%}
+                            <li><a href="#">{{ tag.title }}</a></li>
+                            {% endfor %}
                         </ul>
                     </div>
                 </div>
@@ -37,9 +33,9 @@
             </div>
             <div class="col-md-3 col-xs-12 col-sm-6">
                 <div class="block">
-                    <h1 class="block-title">Follow Us</h1>
+                    <h1 class="block-title">Следите за нами</h1>
                     <div class="block-body">
-                        <p>Follow us and stay in touch to get the latest news</p>
+                        <p>Следите за нами чтобы быть в курсе последних новостей</p>
                         <ul class="social trp">
                             <li>
                                 <a href="#" class="facebook">
@@ -128,10 +124,9 @@
                 <div class="block">
                     <div class="block-body no-margin">
                         <ul class="footer-nav-horizontal">
-                            <li><a href="index.html">Home</a></li>
-                            <li><a href="#">Partner</a></li>
-                            <li><a href="contact.html">Contact</a></li>
-                            <li><a href="page.html">About</a></li>
+                            <li><a href="index.html">Главная</a></li>
+                            <li><a href="contact.html">Контакты</a></li>
+                            <li><a href="page.html">О нас</a></li>
                         </ul>
                     </div>
                 </div>
