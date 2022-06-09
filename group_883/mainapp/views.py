@@ -1,6 +1,5 @@
 from django.shortcuts import render
 from django.views.generic import ListView
-
 from .models import Article
 
 
@@ -29,8 +28,9 @@ class SearchResultsView(ListView):
     model = Article
     template_name = 'search.html'
 
-
     def get_queryset(self):
         query = self.request.GET.get('q')
+        if not query:
+            query = ""
         return Article.objects.filter(title__icontains=query)
 
