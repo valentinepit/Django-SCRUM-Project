@@ -1,5 +1,11 @@
 from django.shortcuts import render
+<<<<<<< HEAD
 from mainapp.models import Article, Category, Tag
+=======
+from django.views.generic import ListView
+
+from .models import Article
+>>>>>>> main
 
 
 def index(request):
@@ -34,4 +40,14 @@ def article(request, pk):
         'title': 'article_name'
     }
     return render(request, 'mainapp/article.html', context)
+
+
+class SearchResultsView(ListView):
+    model = Article
+    template_name = 'search.html'
+
+
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        return Article.objects.filter(title__icontains=query)
 
