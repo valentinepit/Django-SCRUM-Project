@@ -46,8 +46,6 @@ class SearchResultsView(ListView):
     model = Article
     template_name = 'search.html'
 
-
     def get_queryset(self):
         query = self.request.GET.get('q')
         return Article.objects.filter(title__icontains=query)
-
