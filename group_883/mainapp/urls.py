@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from . import views as mainapp
 
 from .views import SearchResultsView
@@ -11,4 +11,3 @@ urlpatterns = [
     path('category/<int:pk>/', mainapp.category, name='category'),
     path('article/<int:pk>/', mainapp.article, name='article'),
 ]
-
