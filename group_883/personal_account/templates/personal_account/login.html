@@ -1,0 +1,25 @@
+{% extends 'personal_account/base.html' %}
+{% load static %}
+
+{% block content %}
+    <section class="login first grey">
+        <div class="container">
+            <div class="box-wrapper">
+                <div class="box box-border">
+                    <div class="box-body">
+                        <h4>Login</h4>
+                        <form action="{% url 'personal_account:login' %}" method="post">
+                            {% csrf_token %}
+                            {{ login_form.as_p }}
+                            <button class="btn btn-primary" type="submit">Войти</button>
+                            <ul>
+                                <a href="{% url 'personal_account:register' %}">Регистрация</a>
+                            </ul>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+{% endblock %}

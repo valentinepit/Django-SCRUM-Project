@@ -16,8 +16,8 @@
         <div id="menu-list">
             <ul class="nav-list">
                 <li class="for-tablet nav-title"><a>Menu</a></li>
-                <li class="for-tablet"><a href="login.html">Login</a></li>
-                <li class="for-tablet"><a href="register.html">Register</a></li>
+                <li class="for-tablet"><a href="{% url 'personal_account:login' %}">Login</a></li>
+                <li class="for-tablet"><a href="{% url 'personal_account:register' %}">Register</a></li>
                 <li id="menu-item"><a href="category.html">Все потоки</a></li>
                 {% for category in categories %}
                 <li><a href="category.html">{{ category.title }}</a></li>
