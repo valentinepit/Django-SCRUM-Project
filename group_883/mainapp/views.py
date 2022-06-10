@@ -1,11 +1,6 @@
 from django.shortcuts import render
-<<<<<<< HEAD
 from mainapp.models import Article, Category, Tag
-=======
 from django.views.generic import ListView
-
-from .models import Article
->>>>>>> main
 
 
 def index(request):
