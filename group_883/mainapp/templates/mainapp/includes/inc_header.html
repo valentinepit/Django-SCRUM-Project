@@ -14,14 +14,16 @@
                 <form class="search" autocomplete="off">
                     <div class="form-group">
                         <div class="input-group">
-                            <input type="text" name="q" class="form-control" placeholder="Type something here">
+                            <input type="text" name="q" class="form-control" placeholder="Введите текст">
                             <div class="input-group-btn">
-                                <button class="btn btn-primary"><i class="ion-search"></i></button>
+                                <a href="{% url 'mainapp:search_results' %}">
+                                    <button class="btn btn-primary"><i class="ion-search"></i></button>
+                                </a>
                             </div>
                         </div>
                     </div>
                     <div class="help-block">
-                        <div>Popular:</div>
+                        <div>Популярно:</div>
                         <ul>
                             <li><a href="#">HTML5</a></li>
                             <li><a href="#">CSS3</a></li>
@@ -34,12 +36,21 @@
             </div>
             <div class="col-md-3 col-sm-12 text-right">
                 <ul class="nav-icons">
-                    <li><a href="register.html"><i class="ion-person-add"></i>
-                        <div>Register</div>
-                    </a></li>
-                    <li><a href="login.html"><i class="ion-person"></i>
-                        <div>Login</div>
-                    </a></li>
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url "personal_account:edit" %}"><i class="ion-person"></i>
+                            <div>{{ user.first_name|default:'Пользователь' }}</div>
+                        </a></li>
+                        <li><a href="{% url 'personal_account:logout' %}"><i class="ion-person"></i>
+                            <div>Logout</div>
+                        </a></li>
+                    {% else %}
+                        <li><a href="{% url 'personal_account:register' %}"><i class="ion-person-add"></i>
+                            <div>Register</div>
+                        </a></li>
+                        <li><a href="{% url 'personal_account:login' %}"><i class="ion-person"></i>
+                            <div>Login</div>
+                        </a></li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
