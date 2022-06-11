@@ -1,0 +1,26 @@
+.bloger {
+  overflow: hidden;
+  border-radius: 50%;
+  margin: 0 auto;
+  width: 132px;
+  height: 132px;
+}
+
+.photo-bloger {
+  width: auto;
+  height: 100%;
+  margin: 0 auto;
+}
+
+#bloger-name {
+  color: #0b0b0b;
+}
+
+#article-title {
+  text-transform: none;
+}
+
+/*#menu-item {*/
+/*  !*font-size: 0.9em;*!*/
+/*  font-size: 1.4em;*/
+/*}*/
