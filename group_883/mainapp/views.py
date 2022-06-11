@@ -2,7 +2,6 @@ from django.shortcuts import render
 from mainapp.models import Article, Category, Tag
 from django.views.generic import ListView
 
-
 def index(request):
     categories = Category.objects.all()
     articles = Article.objects.all()
@@ -43,4 +42,6 @@ class SearchResultsView(ListView):
 
     def get_queryset(self):
         query = self.request.GET.get('q')
+        if not query:
+            query = ""
         return Article.objects.filter(title__icontains=query)
