@@ -17,86 +17,15 @@
                                     </figure>
                                     <div class="details">
                                         <div class="category"><a href="category.html">{{ article.category }}</a></div>
-                                        <h1 id="article-title"><a href="article.html">{{ article.title }}</a></h1>
+                                        <h1 id="article-title"><a
+                                                href="{% url 'mainapp:article' article.pk %}">{{ article.title }}</a>
+                                        </h1>
                                         <div class="time">{{ article.created_at|date:"d E Y" }}</div>
                                     </div>
                                 </article>
                             {% endfor %}
                         </div>
                     </div>
-                    {#                    <div class="line">#}
-                    {#                        <div>Последние новости</div>#}
-                    {#                    </div>#}
-                    {#                    <div class="row">#}
-                    {#                        <div class="col-md-6 col-sm-6 col-xs-12">#}
-                    {#                            <div class="row">#}
-                    {#                                {% for new in news_row_1 %}#}
-                    {#                                    <article class="article col-md-12">#}
-                    {#                                        <div class="inner">#}
-                    {#                                            <figure>#}
-                    {#                                                <a href="article.html">#}
-                    {#                                                    <img src="/media/{{ new.image }}" alt="Sample Article">#}
-                    {#                                                </a>#}
-                    {#                                            </figure>#}
-                    {#                                            <div class="padding">#}
-                    {#                                                <div class="detail">#}
-                    {#                                                    <div class="time">{{ new.created_at|date:'d E Y' }}</div>#}
-                    {#                                                    <div class="category"><a href="category.html">{{ new.category }}</a>#}
-                    {#                                                    </div>#}
-                    {#                                                </div>#}
-                    {#                                                <h2><a href="article.html">{{ new.title }}</a></h2>#}
-                    {#                                                <p>{{ new.body }}</p>#}
-                    {#                                                <footer>#}
-                    {#                                                    <a href="#" class="love"><i#}
-                    {#                                                            class="ion-android-favorite-outline"></i>#}
-                    {#                                                        <div>1263</div>#}
-                    {#                                                    </a>#}
-                    {#                                                    <a class="btn btn-primary more" href="article.html">#}
-                    {#                                                        <div>Далее</div>#}
-                    {#                                                        <div><i class="ion-ios-arrow-thin-right"></i></div>#}
-                    {#                                                    </a>#}
-                    {#                                                </footer>#}
-                    {#                                            </div>#}
-                    {#                                        </div>#}
-                    {#                                    </article>#}
-                    {#                                {% endfor %}#}
-                    {#                            </div>#}
-                    {#                        </div>#}
-                    {#                        <div class="col-md-6 col-sm-6 col-xs-12">#}
-                    {#                            <div class="row">#}
-                    {#                                {% for new in news_row_2 %}#}
-                    {#                                    <article class="article col-md-12">#}
-                    {#                                        <div class="inner">#}
-                    {#                                            <figure>#}
-                    {#                                                <a href="article.html">#}
-                    {#                                                    <img src="/media/{{ new.image }}" alt="Sample Article">#}
-                    {#                                                </a>#}
-                    {#                                            </figure>#}
-                    {#                                            <div class="padding">#}
-                    {#                                                <div class="detail">#}
-                    {#                                                    <div class="time">{{ new.created_at|date:'d E Y' }}</div>#}
-                    {#                                                    <div class="category"><a href="category.html">{{ new.category }}</a>#}
-                    {#                                                    </div>#}
-                    {#                                                </div>#}
-                    {#                                                <h2><a href="article.html">{{ new.title }}</a></h2>#}
-                    {#                                                <p>{{ new.body }}</p>#}
-                    {#                                                <footer>#}
-                    {#                                                    <a href="#" class="love"><i#}
-                    {#                                                            class="ion-android-favorite-outline"></i>#}
-                    {#                                                        <div>1263</div>#}
-                    {#                                                    </a>#}
-                    {#                                                    <a class="btn btn-primary more" href="article.html">#}
-                    {#                                                        <div>Далее</div>#}
-                    {#                                                        <div><i class="ion-ios-arrow-thin-right"></i></div>#}
-                    {#                                                    </a>#}
-                    {#                                                </footer>#}
-                    {#                                            </div>#}
-                    {#                                        </div>#}
-                    {#                                    </article>#}
-                    {#                                {% endfor %}#}
-                    {#                            </div>#}
-                    {#                        </div>#}
-                    {#                    </div>#}
                     <div class="banner">
                         <a href="#">
                             <img src="{% static 'images/ads.png' %}" alt="Sample Article">
@@ -132,12 +61,14 @@
                                     <article class="article-mini">
                                         <div class="inner">
                                             <figure>
-                                                <a href="article.html">
+                                                <a href="{% url 'mainapp:article' new.pk %}">
                                                     <img src="/media/{{ new.image }}" alt="Sample Article">
                                                 </a>
                                             </figure>
                                             <div class="padding">
-                                                <h1 id="article-title"><a href="article.html">{{ new.title }}</a></h1>
+                                                <h1 id="article-title"><a
+                                                        href="{% url 'mainapp:article' new.pk %}">{{ new.title }}</a>
+                                                </h1>
                                                 <div class="detail">
                                                     <div class="category"><a href="category.html">{{ new.category }}</a>
                                                     </div>
@@ -154,35 +85,35 @@
                         <div>Лучшее за неделю</div>
                     </div>
                     <div class="row">
-                        {% for item in best_of_week%}
-                        <article class="col-md-12 article-list">
-                            <div class="inner">
-                                <figure>
-                                    <a href="article.html">
-                                        <img src="/media/{{ item.image }}" alt="Sample Article">
-                                    </a>
-                                </figure>
-                                <div class="details">
-                                    <div class="detail">
-                                        <div class="category">
-                                            <a href="#">{{ item.category }}</a>
+                        {% for item in best_of_week %}
+                            <article class="col-md-12 article-list">
+                                <div class="inner">
+                                    <figure>
+                                        <a href="{% url 'mainapp:article' item.pk %}">
+                                            <img src="/media/{{ item.image }}" alt="Sample Article">
+                                        </a>
+                                    </figure>
+                                    <div class="details">
+                                        <div class="detail">
+                                            <div class="category">
+                                                <a href="#">{{ item.category }}</a>
+                                            </div>
+                                            <div class="time">{{ item.created_at|date:'d E Y' }}</div>
                                         </div>
-                                        <div class="time">{{ item.created_at|date:'d E Y'}}</div>
+                                        <h1><a href="{% url 'mainapp:article' item.pk %}">{{ item.title }}</a></h1>
+                                        <p>{{ item.short_desc }}</p>
+                                        <footer>
+                                            <a href="#" class="love"><i class="ion-android-favorite-outline"></i>
+                                                <div>{{ item.like }}</div>
+                                            </a>
+                                            <a class="btn btn-primary more" href="{% url 'mainapp:article' item.pk %}">
+                                                <div>Далее</div>
+                                                <div><i class="ion-ios-arrow-thin-right"></i></div>
+                                            </a>
+                                        </footer>
                                     </div>
-                                    <h1><a href="article.html">{{ item.title }}</a></h1>
-                                    <p>{{ item.short_desc }}</p>
-                                    <footer>
-                                        <a href="#" class="love"><i class="ion-android-favorite-outline"></i>
-                                            <div>{{ item.like }}</div>
-                                        </a>
-                                        <a class="btn btn-primary more" href="article.html">
-                                            <div>Далее</div>
-                                            <div><i class="ion-ios-arrow-thin-right"></i></div>
-                                        </a>
-                                    </footer>
                                 </div>
-                            </div>
-                        </article>
+                            </article>
                         {% endfor %}
                     </div>
                 </div>
@@ -198,13 +129,13 @@
                                 <article class="article-mini">
                                     <div class="inner">
                                         <figure>
-                                            <a href="article.html">
+                                            <a href="{% url 'mainapp:article' article.pk %}">
                                                 <img src="/media/{{ article.image }}" alt="Sample Article">
                                             </a>
                                         </figure>
                                         <div class="padding">
                                             <h1 id="article-title"><a
-                                                    href="article.html">{{ article.title|wordwrap:50 }}</a>
+                                                    href="{% url 'mainapp:article' article.pk %}">{{ article.title }}</a>
                                             </h1>
                                         </div>
                                     </div>

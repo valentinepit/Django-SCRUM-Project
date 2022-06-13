@@ -34,9 +34,10 @@ class Article(models.Model):
 class Comment(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    body = models.TextField(verbose_name='Текст комментария')
+    body = models.TextField(verbose_name='Комментарий')
     created_at = models.DateTimeField(verbose_name='Дата создания', auto_now_add=True)
     updated_at = models.DateTimeField(verbose_name='Дата обновления', auto_now=True)
+    # is_active = models.BooleanField(default=False)
 
     def __str__(self):
         return self.body
