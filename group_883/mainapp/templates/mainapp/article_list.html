@@ -86,7 +86,7 @@
                         </div>
                     </div>
                     <div class="search-result">
-                        Search results for keyword "hello" found in 5,200 posts.
+                        Search results for keyword "{{ search_data }}" found in 5,200 posts.
                     </div>
                     <div class="row">
                         {% for article in object_list %}
@@ -109,7 +109,7 @@
                             </p>
                             <footer>
                                 <a href="#" class="love"><i class="ion-android-favorite-outline"></i>
-                                    <div>783</div>
+                                    <div>{{ article.like }}</div>
                                 </a>
                                 <a class="btn btn-primary more" href="single.html">
                                     <div>More</div>

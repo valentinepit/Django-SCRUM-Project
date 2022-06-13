@@ -40,8 +40,17 @@ class SearchResultsView(ListView):
     model = Article
     template_name = 'search.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(SearchResultsView, self).get_context_data(**kwargs)
+        context['search_data'] = self.request.GET.get('q')
+        print(f"{context = }")
+
+        return context
+
     def get_queryset(self):
         query = self.request.GET.get('q')
         if not query:
             query = ""
         return Article.objects.filter(title__icontains=query)
+
+
