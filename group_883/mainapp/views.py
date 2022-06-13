@@ -1,3 +1,4 @@
+
 from django.shortcuts import render, get_object_or_404
 
 from mainapp.forms import CommentForm
@@ -76,5 +77,6 @@ class SearchResultsView(ListView):
 
     def get_queryset(self):
         query = self.request.GET.get('q')
+        if not query:
+            query = ""
         return Article.objects.filter(title__icontains=query)
-
