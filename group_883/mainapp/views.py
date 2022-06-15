@@ -115,3 +115,16 @@ class SearchResultsView(ListView):
         if not query:
             query = ""
         return Article.objects.filter(title__icontains=query)
+
+
+def help(request):
+    categories = Category.objects.all()
+    newest_article = Article.objects.all().last()
+    articles = Article.objects.all().order_by('-id')
+    context = {
+        'title': 'help',
+        'categories': categories,
+        'newest_article': newest_article,
+        'last_3_articles': articles[:3],
+    }
+    return render(request, 'mainapp/help.html', context)
