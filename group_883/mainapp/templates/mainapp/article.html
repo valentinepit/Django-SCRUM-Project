@@ -36,7 +36,7 @@
                                         <div class="detail">
                                             <div class="time">{{ newest_article.created_at|date:'d E Y' }}</div>
                                             <div class="category"><a
-                                                    href="category.html">{{ newest_article.category }}</a></div>
+                                                    href="{% url 'mainapp:category_page' newest_article.category.pk 1 %}">{{ newest_article.category }}</a></div>
                                         </div>
                                     </div>
                                 </div>
@@ -54,7 +54,7 @@
                                             <h1 id="article-title"><a
                                                     href="{% url 'mainapp:article' item.pk %}">{{ item.title }}</a></h1>
                                             <div class="detail">
-                                                <div class="category"><a href="category.html">{{ item.category }}</a>
+                                                <div class="category"><a href="{% url 'mainapp:category_page' item.category.pk 1 %}">{{ item.category }}</a>
                                                 </div>
                                                 <div class="time">{{ item.created_at|date:'d E Y' }}</div>
                                             </div>
@@ -100,7 +100,6 @@
                             <div class="featured">
                                 <figure>
                                     <img src="{% static 'images/news/img01.jpg' %}">
-                                    {#                                <figcaption>Image by pexels.com</figcaption>#}
                                 </figure>
                             </div>
 
@@ -220,7 +219,7 @@
                                         <h2 id="article-title"><a
                                                 href="{% url 'mainapp:article' item.pk %}">{{ item.title }}</a></h2>
                                         <div class="detail">
-                                            <div class="category"><a href="category.html">{{ item.category }}</a></div>
+                                            <div class="category"><a href="{% url 'mainapp:category_page' item.category.pk 1 %}">{{ item.category }}</a></div>
                                             <div class="time">{{ item.created_at|date:'d E Y' }}</div>
                                         </div>
                                     </div>
@@ -296,29 +295,10 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="item">
-                                <div class="user">
-                                    <figure>
-                                        <img src="{% static 'images/img01.jpg' %}">
-                                    </figure>
-                                    <div class="details">
-                                        <h5 class="name">Mark Otto</h5>
-                                        <div class="time">24 Hours</div>
-                                        <div class="description">
-                                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                                            tempor incididunt ut labore et dolore <a href="#">magna</a> aliqua. Ut enim
-                                            ad
-                                            minim veniam,
-                                            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.
-                                        </div>
-                                        <footer>
-                                            <a href="#">Reply</a>
-                                        </footer>
-                                    </div>
-                                </div>
-                            </div>
+
                         </div>
 
+                    {% if user.is_authenticated%}
                         <form class="form-group" method="post">
 {#                        <form class="form-group" method="post" action="{% url 'mainapp:article' article.pk %}">#}
                             <div class="col-md-12">
@@ -332,6 +312,11 @@
                                 <button class="btn btn-primary" type="submit">Отправить</button>
                             </div>
                         </form>
+                    {% else %}
+{#                        <a class="title">Войдите чтобы оставить комментарий</a>#}
+                        Чтобы оставить комментарий
+                        <a href="{% url 'personal_account:login' %}"><button class="btn btn-primary">Войдите</button></a>
+                    {% endif %}
                     </div>
                 </div>
             </div>
