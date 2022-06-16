@@ -42,15 +42,25 @@ class SearchResultsView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(SearchResultsView, self).get_context_data(**kwargs)
-        context['search_data'] = self.request.GET.get('q')
-        print(f"{context = }")
-
+        query = self.request.GET.get('q')
+        context.update({
+            'search_data': query,
+            'categories': Category.objects.order_by('title'),
+            'count': len(Article.objects.filter(title__icontains=query)),
+        })
         return context
 
     def get_queryset(self):
         query = self.request.GET.get('q')
         if not query:
             query = ""
-        return Article.objects.filter(title__icontains=query)
+        result = Article.objects.filter(title__icontains=query)
+        return result
+
+    def url_name(self, request):
+        url_name = False
+        if request.resolver_match:
+            url_name = request.resolver_match.url_name
+        return {"url_name": url_name}
 
 
