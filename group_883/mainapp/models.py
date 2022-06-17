@@ -29,6 +29,7 @@ class Article(models.Model):
     like = models.BigIntegerField(verbose_name='Количество лайков', default=0)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True)
     likes = models.ManyToManyField(User, related_name='liked_articles')
 
     def total_likes(self):
