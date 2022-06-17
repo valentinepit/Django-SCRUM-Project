@@ -1,0 +1,19 @@
+{% extends 'personal_account/base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="container">
+        <div class="box-wrapper">
+            <div class="box box-border">
+                <div class="box-body">
+                    <h4>Измените статью</h4>
+                    <form action="{% url 'personal_account:edit_article' object.pk%}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button class="btn btn-primary" type="submit">Сохранить</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,9 +1,11 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib import auth
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
+from django.views.generic import ListView, UpdateView, CreateView, DeleteView
 
-from personal_account.forms import UserLoginForm, UserRegisterForm, UserEditForm
+from personal_account.forms import UserLoginForm, UserRegisterForm, UserEditForm, CreateArticleForm
+from mainapp.models import Article
 
 
 def login(request):
@@ -53,10 +55,48 @@ def edit(request):
         edit_form = UserEditForm(request.POST, request.FILES, instance=request.user)
         if edit_form.is_valid():
             edit_form.save()
-            return HttpResponseRedirect(reverse('personal_account:edit'))
+            return HttpResponseRedirect(reverse('personal_account:user'))
     else:
         edit_form = UserEditForm(instance=request.user)
     context = {
         'edit_form': edit_form
     }
     return render(request, 'personal_account/edit.html', context)
+
+
+def user(request):
+    return render(request, 'personal_account/user.html')
+
+
+class ListArticle(ListView):
+    model = Article
+    template_name = 'personal_account/article_list.html'
+
+    def get_queryset(self):
+        return Article.objects.filter(user=self.request.user)
+
+
+class CreateArticle(CreateView):
+    model = Article
+    template_name = 'personal_account/article_create.html'
+    form_class = CreateArticleForm
+
+    def get_success_url(self):
+        return reverse('personal_account:list_article')
+
+
+class EditArticle(UpdateView):
+    model = Article
+    template_name = 'personal_account/article_edit.html'
+    form_class = CreateArticleForm
+
+    def get_success_url(self):
+        return reverse('personal_account:list_article')
+
+
+class DeleteArticle(DeleteView):
+    model = Article
+    template_name = 'personal_account/article_delete.html'
+
+    def get_success_url(self):
+        return reverse('personal_account:list_article')

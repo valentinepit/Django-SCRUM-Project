@@ -1,11 +1,13 @@
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from django.template.loader import render_to_string
+from django.utils import timezone
+from datetime import timedelta
 from django.http import JsonResponse
+from django.template.loader import render_to_string
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404, redirect
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
-from mainapp.forms import CommentForm
 from mainapp.models import Article, Category, Tag, Comment
+from mainapp.forms import CommentForm
 from django.views.generic import ListView
 
 
@@ -24,7 +26,6 @@ def index(request):
         'read_now': read_now,
         'news': news,
         'tags': tags[:10],
-        'popular_tags': tags[:5],
         'best_of_week': best_of_week
     }
     return render(request, 'mainapp/index.html', context)
@@ -79,7 +80,6 @@ def article(request, pk):
     newest_article = Article.objects.all().last()
     articles = Article.objects.all().order_by('-id')
     tags = Tag.objects.all()
-    total_likes = article.total_likes()
 
     comments = Comment.objects.filter(article__pk=article.pk)
     new_comment = None
@@ -104,8 +104,7 @@ def article(request, pk):
         'tags': tags[:10],
         'commnets': comments,
         'new_comment': new_comment,
-        'comment_form': comment_form,
-        'total_likes': total_likes,
+        'comment_form': comment_form
     }
     return render(request, 'mainapp/article.html', context)
 
@@ -114,11 +113,47 @@ class SearchResultsView(ListView):
     model = Article
     template_name = 'search.html'
 
-    def get_queryset(self):
+    def get_context_data(self, **kwargs):
+        context = super(SearchResultsView, self).get_context_data(**kwargs)
         query = self.request.GET.get('q')
+        context.update({
+            'search_data': query,
+            'categories': Category.objects.order_by('title'),
+            'count': len(Article.objects.filter(title__icontains=query)),
+        })
+        return context
+
+    def get_queryset(self):
+        query = None
+        if self.request.method == "GET":
+            query = self.request.GET.get('q')
         if not query:
             query = ""
-        return Article.objects.filter(title__icontains=query)
+        category_filter = self.category_filter()
+        date_filter = self.date_filter(category_filter)
+        result = date_filter.filter(title__icontains=query)
+        return result
+
+    def category_filter(self):
+        cat_filter = self.request.GET.getlist('category') if self.request.GET.getlist('category') else "on"
+        if "on" not in cat_filter:
+            return Article.objects.filter(category__title__in=cat_filter)
+        return Article.objects.all()
+
+    def date_filter(self, _query):
+        date_filter = "Anytime" if not self.request.GET.get('date') else self.request.GET.get('date')
+        today = timezone.now()
+        days_gap = 0
+        if "Anytime" == date_filter:
+            return _query.all()
+        if date_filter == 'Today':
+            days_gap = 1
+        elif date_filter == 'Last Week':
+            days_gap = 7
+        elif date_filter == 'Last Month':
+            days_gap = 30
+        date_range = today - timedelta(days=days_gap)
+        return _query.filter(created_at__gte=date_range)
 
 
 def help(request):

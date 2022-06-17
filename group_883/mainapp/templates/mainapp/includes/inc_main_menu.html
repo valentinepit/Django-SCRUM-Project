@@ -22,16 +22,20 @@
                 {% for category in categories %}
                 <li><a href="{% url 'mainapp:category_page' category.pk 1 %}">{{ category.title }}</a></li>
                 {% endfor %}
-                <li class="dropdown magz-dropdown"><a href="#">Кабинет <i
+                <li class="dropdown magz-dropdown"><a href="{% url 'personal_account:user' %}">Кабинет <i
                         class="ion-ios-arrow-right"></i></a>
                     <ul class="dropdown-menu">
-                        <li><a href="#"><i class="icon ion-person"></i> My Account</a></li>
+                        <li><a href="{% url 'personal_account:user' %}"><i class="icon ion-person"></i> My Account</a></li>
                         <li><a href="#"><i class="icon ion-heart"></i> Favorite</a></li>
                         <li><a href="#"><i class="icon ion-chatbox"></i> Comments</a></li>
                         <li><a href="#"><i class="icon ion-key"></i> Change Password</a></li>
-                        <li><a href="#"><i class="icon ion-settings"></i> Settings</a></li>
+                        <li><a href="{% url 'personal_account:edit' %}}"><i class="icon ion-settings"></i> Settings</a></li>
                         <li class="divider"></li>
-                        <li><a href="#"><i class="icon ion-log-out"></i> Logout</a></li>
+                        {%if user.is_authenticated%}
+                        <li><a href="{% url 'personal_account:logout' %}"><i class="icon ion-log-out"></i> Logout</a></li>
+                        {% else %}
+                        <li><a href="{% url 'personal_account:login' %}"><i class="icon ion-log-out"></i> Login</a></li>
+                        {% endif %}
                     </ul>
                 </li>
                 <li><a href="{% url 'mainapp:help' %}">Помощь</a></li>

@@ -4,6 +4,7 @@ from personal_account.models import User
 
 class Category(models.Model):
     title = models.CharField(verbose_name='Название', max_length=100)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.title
@@ -11,6 +12,7 @@ class Category(models.Model):
 
 class Tag(models.Model):
     title = models.CharField(verbose_name='Название', max_length=20)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.title
@@ -26,6 +28,7 @@ class Article(models.Model):
     image = models.ImageField(upload_to='image_article', verbose_name='Фото', blank=True)
     like = models.BigIntegerField(verbose_name='Количество лайков', default=0)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    is_active = models.BooleanField(default=True)
     likes = models.ManyToManyField(User, related_name='liked_articles')
 
     def total_likes(self):
@@ -34,6 +37,13 @@ class Article(models.Model):
     def __str__(self):
         return self.title
 
+    def delete(self, using=None, keep_parents=False):
+        if self.is_active:
+            self.is_active = False
+        else:
+            self.is_active = True
+        self.save()
+
 
 class Comment(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
@@ -41,7 +51,7 @@ class Comment(models.Model):
     body = models.TextField(verbose_name='Комментарий')
     created_at = models.DateTimeField(verbose_name='Дата создания', auto_now_add=True)
     updated_at = models.DateTimeField(verbose_name='Дата обновления', auto_now=True)
-    # is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.body
