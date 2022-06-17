@@ -1,3 +1,7 @@
+from datetime import datetime, timedelta
+from django.utils import timezone
+
+import date_range as date_range
 from django.shortcuts import render
 from mainapp.models import Article, Category, Tag
 from django.views.generic import ListView
@@ -51,18 +55,39 @@ class SearchResultsView(ListView):
         return context
 
     def get_queryset(self):
-        query = self.request.GET.get('q')
+        query = None
+        if self.request.method == "GET":
+            query = self.request.GET.get('q')
         if not query:
             query = ""
         category_filter = self.category_filter()
-        result = Article.objects.filter(title__icontains=query).filter(category__title__in=category_filter)
+        date_filter = self.date_filter(category_filter)
 
+        result = date_filter.filter(title__icontains=query)
         return result
 
     def category_filter(self):
-        if self.request.method == "GET":
-            print(f"{self.request.GET.getlist('category')}")
-        else:
-            print(self.request.method)
-        return self.request.GET.getlist('category')
+        cat_filter = self.request.GET.getlist('category')
+        if "on" not in cat_filter:
+            return Article.objects.filter(category__title__in=cat_filter)
+        return Article.objects.all()
+
+    def date_filter(self, _query):
+        date_filter = self.request.GET.get('date')
+        today = timezone.now()
+        days_gap = 0
+        if "on" in date_filter:
+            return _query.all()
+        elif date_filter == 'Today':
+            days_gap = 1
+        elif date_filter == 'Last Week':
+            days_gap = 7
+        elif date_filter == 'Last Month':
+            days_gap = 30
+        date_range = today - timedelta(days=days_gap)
+        return _query.filter(created_at__gte=date_range)
+
+
+
+
 
