@@ -65,16 +65,16 @@ class SearchResultsView(ListView):
         return result
 
     def category_filter(self):
-        cat_filter = self.request.GET.getlist('category')
+        cat_filter = self.request.GET.getlist('category') if self.request.GET.getlist('category') else "on"
         if "on" not in cat_filter:
             return Article.objects.filter(category__title__in=cat_filter)
         return Article.objects.all()
 
     def date_filter(self, _query):
-        date_filter = self.request.GET.get('date')
+        date_filter = "Anytime" if not self.request.GET.get('date') else self.request.GET.get('date')
         today = timezone.now()
         days_gap = 0
-        if "Anytime" in date_filter:
+        if "Anytime" == date_filter:
             return _query.all()
         if date_filter == 'Today':
             days_gap = 1
