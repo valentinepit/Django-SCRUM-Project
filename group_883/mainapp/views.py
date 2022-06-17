@@ -54,13 +54,15 @@ class SearchResultsView(ListView):
         query = self.request.GET.get('q')
         if not query:
             query = ""
-        result = Article.objects.filter(title__icontains=query)
+        category_filter = self.category_filter()
+        result = Article.objects.filter(title__icontains=query).filter(category__title__in=category_filter)
+
         return result
 
-    def url_name(self, request):
-        url_name = False
-        if request.resolver_match:
-            url_name = request.resolver_match.url_name
-        return {"url_name": url_name}
-
+    def category_filter(self):
+        if self.request.method == "GET":
+            print(f"{self.request.GET.getlist('category')}")
+        else:
+            print(self.request.method)
+        return self.request.GET.getlist('category')
 

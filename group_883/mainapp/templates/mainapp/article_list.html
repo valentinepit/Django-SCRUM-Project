@@ -22,13 +22,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </form>
-                        </div>
-                    </aside>
-                    <aside>
-                        <h2 class="aside-title">Filter</h2>
-                        <div class="aside-body">
-                            <form class="checkbox-group" method="post">
+                                <h2 class="aside-title">Filter</h2>
                                 <div class="group-title">Date</div>
                                 <div class="form-group">
                                     <label><input type="radio" name="date" checked> Anytime</label>
@@ -44,14 +38,19 @@
                                 </div>
                                 <br>
                                 <div class="group-title">Categories</div>
+                                {% for category in categories %}
+                                    <div class="form-group">
+                                        <label><input type="checkbox" name="category"
+                                                      value={{ category.title }}> {{ category.title }}
+                                        </label>
+                                    </div>
+                                {% endfor %}
                                 <div class="form-group">
                                     <label><input type="checkbox" name="category" checked> All Categories</label>
                                 </div>
-                                {% for category in categories %}
-                                <div class="form-group">
-                                    <label><input type="checkbox" name="category" value={{ category.title }}> {{ category.title }}</label>
+                                <div class="input-group-btn">
+                                    <button class="btn btn-primary"><i class="ion-search"></i></button>
                                 </div>
-                                {% endfor %}
                             </form>
                         </div>
                     </aside>
@@ -81,34 +80,34 @@
                     <div class="row">
                         {% for article in object_list %}
                             <article class="col-md-12 article-list">
-                            <div class="inner">
-                            <figure>
-                                    <img src='/media/{{ article.image }}'>
-                            </figure>
-                            <div class="details">
-                            <div class="detail">
-                                <div class="category">
-                                    <a href="#">{{ article.tag }}</a>
+                                <div class="inner">
+                                    <figure>
+                                        <img src='/media/{{ article.image }}'>
+                                    </figure>
+                                    <div class="details">
+                                        <div class="detail">
+                                            <div class="category">
+                                                <a href="#">{{ article.tag }}</a>
+                                            </div>
+                                            <time>{{ article.created_at }}</time>
+                                        </div>
+                                        <h1><a href="single.html">{{ article.title }}</a></h1>
+                                        </h1>
+                                        <p>
+                                            {{ article.short_desc }}
+                                        </p>
+                                        <footer>
+                                            <a href="#" class="love"><i class="ion-android-favorite-outline"></i>
+                                                <div>{{ article.like }}</div>
+                                            </a>
+                                            <a class="btn btn-primary more" href="single.html">
+                                                <div>More</div>
+                                                <div><i class="ion-ios-arrow-thin-right"></i></div>
+                                            </a>
+                                        </footer>
+                                    </div>
                                 </div>
-                                <time>{{ article.created_at }}</time>
-                            </div>
-                            <h1><a href="single.html">{{ article.title }}</a></h1>
-                            </h1>
-                            <p>
-                                {{ article.short_desc }}
-                            </p>
-                            <footer>
-                                <a href="#" class="love"><i class="ion-android-favorite-outline"></i>
-                                    <div>{{ article.like }}</div>
-                                </a>
-                                <a class="btn btn-primary more" href="single.html">
-                                    <div>More</div>
-                                    <div><i class="ion-ios-arrow-thin-right"></i></div>
-                                </a>
-                            </footer>
-                        </div>
-                        </div>
-                        </article>
+                            </article>
                         {% endfor %}
 
                         <div class="col-md-12 text-center">
