@@ -58,8 +58,17 @@ def category(request, pk, page=1):
         articles_paginator = paginator.page(paginator.num_pages)
 
     context = {
-        'title': 'category_name'
+        'title': 'category_name',
+        'categories': categories,
+        'tags': tags[:10],
+        'current_category': current_category,
+        # 'category_articles': category_articles,
+        'category_articles': articles_paginator,
+        'newest_article': newest_article,
+        'last_3_articles': articles[:3],
+        'range': range(1, paginator.num_pages + 1)
     }
+
     return render(request, 'mainapp/category.html', context)
 
 
