@@ -1,4 +1,4 @@
-
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render, get_object_or_404
 
 from mainapp.forms import CommentForm
@@ -27,10 +27,45 @@ def index(request):
     return render(request, 'mainapp/index.html', context)
 
 
-def category(request, pk):
+def category(request, pk, page=1):
+
+    categories = Category.objects.all()
+    tags = Tag.objects.all()
+
+    if pk == 0:
+        category_articles = Article.objects.all()
+        current_category = {
+            'title': 'Все потоки',
+            'pk': 0
+        }
+    else:
+        current_category = get_object_or_404(Category, pk=pk)
+        category_articles = Article.objects.filter(category__pk=current_category.pk)
+
+    newest_article = Article.objects.all().last()
+    articles = Article.objects.all().order_by('-id')
+
+    items_on_page = 10
+    paginator = Paginator(category_articles, items_on_page)
+    try:
+        articles_paginator = paginator.page(page)
+    except PageNotAnInteger:
+        articles_paginator = paginator.page(1)
+    except EmptyPage:
+        articles_paginator = paginator.page(paginator.num_pages)
+
     context = {
-        'title': 'category_name'
+        'title': 'category_name',
+        'categories': categories,
+        'tags': tags[:10],
+        'current_category': current_category,
+        # 'category_articles': category_articles,
+        'category_articles': articles_paginator,
+        'newest_article': newest_article,
+        'last_3_articles': articles[:3],
+        'range': range(1, paginator.num_pages + 1)
     }
+
     return render(request, 'mainapp/category.html', context)
 
 
