@@ -11,6 +11,9 @@
                         <form action="{% url 'personal_account:login' %}" method="post">
                             {% csrf_token %}
                             {{ login_form.as_p }}
+                            {% if next_param %}
+                                <input type="hidden" name="next" value="{{ next_param }}">
+                            {% endif %}
                             <button class="btn btn-primary" type="submit">Войти</button>
                             <ul>
                                 <a href="{% url 'personal_account:register' %}">Регистрация</a>

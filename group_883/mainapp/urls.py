@@ -10,4 +10,5 @@ urlpatterns = [
     path('article/<int:pk>/', mainapp.article, name='article'),
     path('search/', mainapp.SearchResultsView.as_view(), name='search_results'),
     path('help/', mainapp.help, name='help'),
+    path('like/<int:pk>', mainapp.like, name='like_article')
 ]

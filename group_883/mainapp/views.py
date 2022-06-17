@@ -1,5 +1,6 @@
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
 
 from mainapp.forms import CommentForm
 from mainapp.models import Article, Category, Tag, Comment
@@ -28,7 +29,6 @@ def index(request):
 
 
 def category(request, pk, page=1):
-
     categories = Category.objects.all()
     tags = Tag.objects.all()
 
@@ -77,6 +77,7 @@ def article(request, pk):
     newest_article = Article.objects.all().last()
     articles = Article.objects.all().order_by('-id')
     tags = Tag.objects.all()
+    total_likes = article.total_likes()
 
     comments = Comment.objects.filter(article__pk=article.pk)
     new_comment = None
@@ -101,7 +102,8 @@ def article(request, pk):
         'tags': tags[:10],
         'commnets': comments,
         'new_comment': new_comment,
-        'comment_form': comment_form
+        'comment_form': comment_form,
+        'total_likes': total_likes,
     }
     return render(request, 'mainapp/article.html', context)
 
@@ -128,3 +130,15 @@ def help(request):
         'last_3_articles': articles[:3],
     }
     return render(request, 'mainapp/help.html', context)
+
+
+@login_required
+def like(request, pk):
+    if 'login' in request.META.get('HTTP_REFERER'):
+        return redirect('mainapp:article', pk=pk)
+    article = get_object_or_404(Article, id=pk)
+    if article.likes.filter(id=request.user.id).exists():
+        article.likes.remove(request.user)
+    else:
+        article.likes.add(request.user)
+    return redirect('mainapp:article', pk=pk)

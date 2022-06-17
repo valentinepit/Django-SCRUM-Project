@@ -26,6 +26,10 @@ class Article(models.Model):
     image = models.ImageField(upload_to='image_article', verbose_name='Фото', blank=True)
     like = models.BigIntegerField(verbose_name='Количество лайков', default=0)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    likes = models.ManyToManyField(User, related_name='liked_articles')
+
+    def total_likes(self):
+        return self.likes.count()
 
     def __str__(self):
         return self.title
