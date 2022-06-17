@@ -4132,3 +4132,14 @@ blockquote {
 }
 
 /*# sourceMappingURL=style.css.map */
+
+.h2-help{
+    margin-top:0px !important;
+}
+.h3-help{
+    font-size: 18px !important;
+    margin-top:0px !important;
+}
+.main-help{
+padding-top:0px !important;
+}

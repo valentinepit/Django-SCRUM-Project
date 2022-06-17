@@ -6,6 +6,8 @@ app_name = 'mainapp'
 urlpatterns = [
     path('', mainapp.index, name='index'),
     path('category/<int:pk>/', mainapp.category, name='category'),
+    path('category/<int:pk>/<int:page>/', mainapp.category, name='category_page'),
     path('article/<int:pk>/', mainapp.article, name='article'),
     path('search/', mainapp.SearchResultsView.as_view(), name='search_results'),
+    path('help/', mainapp.help, name='help'),
 ]

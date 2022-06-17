@@ -1,0 +1,27 @@
+{% extends 'personal_account/base.html' %}
+{% load static %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="box-wrapper">
+            <div class="box box-border">
+                <div class="box-body">
+                    <h4>Ваши данные</h4>
+                    <h5>{{ user.username }}</h5>
+                    <img src="/media/{{ user.foto }}" width="300px" height="300px">
+                    <p>{{ user.first_name }}</p>
+                    <p>{{ user.last_name }}</p>
+                    <p>{{ user.email }}</p>
+
+                    <ul><a href="{% url 'personal_account:edit' %}" class="btn btn-primary">Изменить данные профиля</a>
+                    </ul>
+                    <ul><a href="{% url 'personal_account:list_article' %}" class="btn btn-primary">Список ваших
+                        статей</a></ul>
+                    <ul><a href="{% url 'personal_account:create_article'%}" class="btn btn-primary">Создать
+                        статью</a></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
