@@ -99,9 +99,7 @@
                         <div class="main">
                             <div class="featured">
                                 <figure>
-
                                     <img src="/media/{{ article.image }}">
-
                                 </figure>
                             </div>
 
@@ -133,10 +131,21 @@
                                 </ul>
                             </div>
                             <div class="col">
-                                <a href="#" class="love"><i class="ion-android-favorite-outline"></i>
-                                    <div>{{ article.like }}</div>
-                                </a>
-                            </div>
+                                    {% if user.is_authenticated %}
+                                    <div class='likes'>
+                                        {% include 'mainapp/includes/inc_likes.html' %}
+                                    </div>
+                                    {% else %}
+                                    <form action="{% url 'mainapp:like_article' article.pk %}" method="POST">
+                                        {% csrf_token %}
+                                        <button type="submit" class="love">
+                                            <i class="ion-android-favorite-outline"></i>
+                                            <div>{{ total_likes }}</div>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+
+                        </div>
                         </footer>
                     </article>
                     <div class="sharing">

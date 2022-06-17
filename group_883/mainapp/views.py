@@ -1,8 +1,13 @@
-from datetime import timedelta
 from django.utils import timezone
+from datetime import timedelta
+from django.http import JsonResponse
+from django.template.loader import render_to_string
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404, redirect
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
-from django.shortcuts import render
-from mainapp.models import Article, Category, Tag
+from mainapp.models import Article, Category, Tag, Comment
+from mainapp.forms import CommentForm
 from django.views.generic import ListView
 
 
@@ -26,7 +31,32 @@ def index(request):
     return render(request, 'mainapp/index.html', context)
 
 
-def category(request, pk):
+def category(request, pk, page=1):
+    categories = Category.objects.all()
+    tags = Tag.objects.all()
+
+    if pk == 0:
+        category_articles = Article.objects.all()
+        current_category = {
+            'title': 'Все потоки',
+            'pk': 0
+        }
+    else:
+        current_category = get_object_or_404(Category, pk=pk)
+        category_articles = Article.objects.filter(category__pk=current_category.pk)
+
+    newest_article = Article.objects.all().last()
+    articles = Article.objects.all().order_by('-id')
+
+    items_on_page = 10
+    paginator = Paginator(category_articles, items_on_page)
+    try:
+        articles_paginator = paginator.page(page)
+    except PageNotAnInteger:
+        articles_paginator = paginator.page(1)
+    except EmptyPage:
+        articles_paginator = paginator.page(paginator.num_pages)
+
     context = {
         'title': 'category_name'
     }
@@ -34,8 +64,44 @@ def category(request, pk):
 
 
 def article(request, pk):
+    categories = Category.objects.all()
+    tags = Tag.objects.all()
+    article = get_object_or_404(Article, pk=pk)
+    similar_articles = Article.objects.filter(category__pk=article.category.pk).exclude(pk=article.pk)
+    newest_article = Article.objects.all().last()
+    articles = Article.objects.all().order_by('-id')
+    tags = Tag.objects.all()
+
+    if article.likes.filter(id=request.user.id).exists():
+        liked = True
+    else:
+        liked = False
+
+    comments = Comment.objects.filter(article__pk=article.pk)
+    new_comment = None
+
+    if request.method == 'POST':
+        comment_form = CommentForm(data=request.POST)
+        if comment_form.is_valid():
+            new_comment = comment_form.save(commit=False)
+            new_comment.article = article
+            new_comment.save()
+    else:
+        comment_form = CommentForm()
+
     context = {
-        'title': 'article_name'
+        'title': 'article_name',
+        'article': article,
+        'categories': categories,
+        'popular_tags': tags[:5],
+        'similar_articles': similar_articles[:2],
+        'newest_article': newest_article,
+        'last_3_articles': articles[:3],
+        'tags': tags[:10],
+        'commnets': comments,
+        'new_comment': new_comment,
+        'total_likes': total_likes,
+        'liked': liked,
     }
     return render(request, 'mainapp/article.html', context)
 
@@ -98,3 +164,26 @@ def help(request):
         'last_3_articles': articles[:3],
     }
     return render(request, 'mainapp/help.html', context)
+
+
+@login_required
+def like(request, pk):
+    if 'login' in request.META.get('HTTP_REFERER'):
+        return redirect('mainapp:article', pk=pk)
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        article = get_object_or_404(Article, id=pk)
+        if article.likes.filter(id=request.user.id).exists():
+            liked = False
+            article.likes.remove(request.user)
+        else:
+            liked = True
+            article.likes.add(request.user)
+
+        context = {
+            'article': article,
+            'total_likes': article.total_likes,
+            'liked': liked,
+        }
+
+        result = render_to_string('mainapp/includes/inc_likes.html', context)
+        return JsonResponse({'result': result})
