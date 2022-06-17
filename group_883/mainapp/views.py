@@ -81,6 +81,11 @@ def article(request, pk):
     tags = Tag.objects.all()
     total_likes = article.total_likes()
 
+    if article.likes.filter(id=request.user.id).exists():
+        liked = True
+    else:
+        liked = False
+
     comments = Comment.objects.filter(article__pk=article.pk)
     new_comment = None
 
@@ -106,6 +111,7 @@ def article(request, pk):
         'new_comment': new_comment,
         'comment_form': comment_form,
         'total_likes': total_likes,
+        'liked': liked,
     }
     return render(request, 'mainapp/article.html', context)
 
@@ -141,13 +147,16 @@ def like(request, pk):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         article = get_object_or_404(Article, id=pk)
         if article.likes.filter(id=request.user.id).exists():
+            liked = False
             article.likes.remove(request.user)
         else:
+            liked = True
             article.likes.add(request.user)
 
         context = {
             'article': article,
-            'total_likes': article.total_likes
+            'total_likes': article.total_likes,
+            'liked': liked,
         }
 
         result = render_to_string('mainapp/includes/inc_likes.html', context)
