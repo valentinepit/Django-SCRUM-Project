@@ -1,9 +1,10 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 from django.utils import timezone
 
 from django.shortcuts import render
 from mainapp.models import Article, Category, Tag
 from django.views.generic import ListView
+
 
 def index(request):
     categories = Category.objects.all()
@@ -86,6 +87,14 @@ class SearchResultsView(ListView):
         return _query.filter(created_at__gte=date_range)
 
 
-
-
-
+def help(request):
+    categories = Category.objects.all()
+    newest_article = Article.objects.all().last()
+    articles = Article.objects.all().order_by('-id')
+    context = {
+        'title': 'help',
+        'categories': categories,
+        'newest_article': newest_article,
+        'last_3_articles': articles[:3],
+    }
+    return render(request, 'mainapp/help.html', context)
