@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 from django.utils import timezone
 
-import date_range as date_range
 from django.shortcuts import render
 from mainapp.models import Article, Category, Tag
 from django.views.generic import ListView
@@ -62,7 +61,6 @@ class SearchResultsView(ListView):
             query = ""
         category_filter = self.category_filter()
         date_filter = self.date_filter(category_filter)
-
         result = date_filter.filter(title__icontains=query)
         return result
 
@@ -76,9 +74,9 @@ class SearchResultsView(ListView):
         date_filter = self.request.GET.get('date')
         today = timezone.now()
         days_gap = 0
-        if "on" in date_filter:
+        if "Anytime" in date_filter:
             return _query.all()
-        elif date_filter == 'Today':
+        if date_filter == 'Today':
             days_gap = 1
         elif date_filter == 'Last Week':
             days_gap = 7
