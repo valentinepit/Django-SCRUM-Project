@@ -99,12 +99,28 @@
                         <div class="main">
                             <div class="featured">
                                 <figure>
-                                    <img src="{% static 'images/news/img01.jpg' %}">
+
+                                    <img src="/media/{{ article.image }}">
+
                                 </figure>
                             </div>
 
                             <p>{{ article.body }}</p>
                         </div>
+                                                                                            <ul>
+                                                <a class="btn btn-primary more"
+                                                   href="{% url 'personal_account:edit_article' article.pk %}">
+                                                    <div>Изменить</div>
+                                                    <div><i class="ion-ios-arrow-thin-right"></i></div>
+                                                </a>
+                                            </ul>
+                                            <ul>
+                                                <a class="btn btn-primary more"
+                                                   href="{% url 'personal_account:delete_article' article.pk %}">
+                                                    <div>Удалить</div>
+                                                    <div><i class="ion-ios-arrow-thin-right"></i></div>
+                                                </a>
+                                            </ul>
                         <footer class="d-flex">
                             <div class="col">
                                 <ul class="tags">
@@ -226,6 +242,7 @@
                                 </div>
                             </article>
                         {% endfor %}
+
                     </div>
                     <div class="line thin"></div>
                     <div class="comments">
