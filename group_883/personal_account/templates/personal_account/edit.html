@@ -2,21 +2,18 @@
 {% load static %}
 
 {% block content %}
-<section class="login first grey">
-    <div class="container">
-        <div class="box-wrapper">
-            <div class="box box-border">
-                <div class="box-body">
-                    <h4>Изменить</h4>
-                    <form action="{% url 'personal_account:edit' %}" method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        {{ edit_form.as_p }}
-                        <input type="submit" class="btn btn-primary" value="Сохранить">
-                    </form>
-                </div>
+<div class="container">
+    <div class="box-wrapper">
+        <div class="box box-border">
+            <div class="box-body">
+                <h4>Изменить</h4>
+                <form action="{% url 'personal_account:edit' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ edit_form.as_p }}
+                    <input type="submit" class="btn btn-primary" value="Сохранить">
+                </form>
             </div>
         </div>
     </div>
-
-</section>
+</div>
 {% endblock %}
