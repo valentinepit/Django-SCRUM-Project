@@ -16,7 +16,7 @@
                                         <img src="/media/{{ article.image }} " alt="Sample Article">
                                     </figure>
                                     <div class="details">
-                                        <div class="category"><a href="category.html">{{ article.category }}</a></div>
+                                        <div class="category"><a href="{% url 'mainapp:category_page' article.category.pk 1 %}">{{ article.category }}</a></div>
                                         <h1 id="article-title"><a
                                                 href="{% url 'mainapp:article' article.pk %}">{{ article.title }}</a>
                                         </h1>
@@ -70,7 +70,7 @@
                                                         href="{% url 'mainapp:article' new.pk %}">{{ new.title }}</a>
                                                 </h1>
                                                 <div class="detail">
-                                                    <div class="category"><a href="category.html">{{ new.category }}</a>
+                                                    <div class="category"><a href="{% url 'mainapp:category_page' new.category.pk 1 %}">{{ new.category }}</a>
                                                     </div>
                                                     <div class="time">{{ new.created_at|date:'d E Y' }}</div>
                                                 </div>
@@ -96,7 +96,7 @@
                                     <div class="details">
                                         <div class="detail">
                                             <div class="category">
-                                                <a href="#">{{ item.category }}</a>
+                                                <a href="{% url 'mainapp:category_page' item.category.pk 1 %}">{{ item.category }}</a>
                                             </div>
                                             <div class="time">{{ item.created_at|date:'d E Y' }}</div>
                                         </div>
@@ -121,7 +121,7 @@
                     <div class="sidebar-title for-tablet">Sidebar</div>
 
                     <aside>
-                        <h1 class="aside-title">Читают сейчас <a href="#" class="all">Все <i
+                        <h1 class="aside-title">Читают сейчас <a href="{% url 'mainapp:category_page' 0 1 %}" class="all">Все <i
                                 class="ion-ios-arrow-right"></i></a>
                         </h1>
                         <div class="aside-body">

@@ -1,0 +1,23 @@
+{% extends 'personal_account/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="box-wrapper">
+        <div class="box box-border">
+            <div class="box-body">
+                {% if object.is_active %}
+                Уверены,что хотите удалить статью {{ object.title }}?
+                {% else %}
+                Восстановить статью?
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="submit" class="btn badge-danger" value="Да">
+                </form>
+                <a href="{% url 'personal_account:list_article' %}" class="btn btn-success">Нет</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
