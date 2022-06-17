@@ -150,5 +150,5 @@ def like(request, pk):
             'total_likes': article.total_likes
         }
 
-        result = render_to_string('mainapp/includes/inc_likes.html',context)
+        result = render_to_string('mainapp/includes/inc_likes.html', context)
         return JsonResponse({'result': result})
