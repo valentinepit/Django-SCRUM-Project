@@ -12,6 +12,10 @@
     {% block css %}
         {% include 'mainapp/includes/inc_css.html' %}
     {% endblock %}
+    {% block js %}
+        <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
+        <script src="{% static 'js/likes.js' %}"></script>
+    {% endblock %}
 </head>
 
 <body class="skin-orange">
@@ -30,9 +34,6 @@
 
 {% block footer %}
     {% include 'mainapp/includes/inc_footer.html' %}
-{% endblock %}
-
-{% block js %}
 {% endblock %}
 
 </body>

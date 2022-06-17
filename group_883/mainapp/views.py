@@ -1,6 +1,8 @@
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.template.loader import render_to_string
+from django.http import JsonResponse
 
 from mainapp.forms import CommentForm
 from mainapp.models import Article, Category, Tag, Comment
@@ -136,9 +138,17 @@ def help(request):
 def like(request, pk):
     if 'login' in request.META.get('HTTP_REFERER'):
         return redirect('mainapp:article', pk=pk)
-    article = get_object_or_404(Article, id=pk)
-    if article.likes.filter(id=request.user.id).exists():
-        article.likes.remove(request.user)
-    else:
-        article.likes.add(request.user)
-    return redirect('mainapp:article', pk=pk)
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        article = get_object_or_404(Article, id=pk)
+        if article.likes.filter(id=request.user.id).exists():
+            article.likes.remove(request.user)
+        else:
+            article.likes.add(request.user)
+
+        context = {
+            'article': article,
+            'total_likes': article.total_likes
+        }
+
+        result = render_to_string('mainapp/includes/inc_likes.html',context)
+        return JsonResponse({'result': result})
