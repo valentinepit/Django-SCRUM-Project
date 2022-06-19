@@ -117,8 +117,7 @@
                                 {% endif %}
                                 Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
                                 {% for page in page_obj.paginator %}
-{#                                 TODO:сделать обработку нажатия на номер страницы   #}
-                                <li class="active"><a href="{{ page.url }}">{{ page.number }}</a></li>
+                                <li class="active"><a href="/search/?q=&page={{ page.number }}">{{ page.number }}</a></li>
                                 {% endfor %}
                             {% if page_obj.has_next %}
                                 <li class="next"><a href="?q={{ search_data }}&page={{ page_obj.next_page_number }}"><i class="ion-ios-arrow-right"></i></a></li>
