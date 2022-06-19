@@ -91,7 +91,7 @@
                                             </div>
                                             <time>{{ article.created_at }}</time>
                                         </div>
-                                        <h1><a href="single.html">{{ article.title }}</a></h1>
+                                        <h1><a href={% url 'mainapp:article' article.pk %}>{{ article.title }}</a></h1>
                                         </h1>
                                         <p>
                                             {{ article.short_desc }}
@@ -100,7 +100,7 @@
                                             <a href="#" class="love"><i class="ion-android-favorite-outline"></i>
                                                 <div>{{ article.like }}</div>
                                             </a>
-                                            <a class="btn btn-primary more" href="single.html">
+                                            <a class="btn btn-primary more" href={% url 'mainapp:article' article.pk %}>
                                                 <div>More</div>
                                                 <div><i class="ion-ios-arrow-thin-right"></i></div>
                                             </a>
@@ -109,21 +109,26 @@
                                 </div>
                             </article>
                         {% endfor %}
-
+                        {% if is_paginated %}
                         <div class="col-md-12 text-center">
                             <ul class="pagination">
-                                <li class="prev"><a href="#"><i class="ion-ios-arrow-left"></i></a></li>
-                                <li class="active"><a href="#">1</a></li>
-                                <li><a href="#">2</a></li>
-                                <li><a href="#">3</a></li>
-                                <li><a href="#">...</a></li>
-                                <li><a href="#">97</a></li>
-                                <li class="next"><a href="#"><i class="ion-ios-arrow-right"></i></a></li>
+                                {% if page_obj.has_previous %}
+                                <li class="prev"><a href="?q={{ search_data }}&page={{ page_obj.previous_page_number }}"><i class="ion-ios-arrow-left"></i></a></li>
+                                {% endif %}
+                                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                                {% for page in page_obj.paginator %}
+{#                                 TODO:сделать обработку нажатия на номер страницы   #}
+                                <li class="active"><a href="{{ page.url }}">{{ page.number }}</a></li>
+                                {% endfor %}
+                            {% if page_obj.has_next %}
+                                <li class="next"><a href="?q={{ search_data }}&page={{ page_obj.next_page_number }}"><i class="ion-ios-arrow-right"></i></a></li>
+                            {% endif %}
                             </ul>
                             <div class="pagination-help-text">
                                 Showing {{ count }} results of {{ count }} &mdash; Page 1
                             </div>
                         </div>
+                    {% endif %}
                     </div>
                 </div>
             </div>

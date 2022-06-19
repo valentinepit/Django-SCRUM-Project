@@ -109,7 +109,7 @@ def article(request, pk):
         'tags': tags[:10],
         'commnets': comments,
         'new_comment': new_comment,
-        'total_likes': total_likes,
+        # 'total_likes': total_likes,
         'liked': liked,
     }
     return render(request, 'mainapp/article.html', context)
@@ -118,6 +118,7 @@ def article(request, pk):
 class SearchResultsView(ListView):
     model = Article
     template_name = 'search.html'
+    paginate_by = 2
 
     def get_context_data(self, **kwargs):
         context = super(SearchResultsView, self).get_context_data(**kwargs)
