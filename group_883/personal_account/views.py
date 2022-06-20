@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib import auth
@@ -10,16 +11,22 @@ from mainapp.models import Article
 
 def login(request):
     login_form = UserLoginForm(data=request.POST)
+
+    next_param = request.GET.get('next', '')
+
     if request.method == 'POST' and login_form.is_valid():
         username = request.POST.get('username')
         password = request.POST.get('password')
         user = auth.authenticate(username=username, password=password)
         if user and user.is_active:
             auth.login(request, user)
+            if 'next' in request.POST.keys():
+                return HttpResponseRedirect(request.POST['next'])
             return HttpResponseRedirect(reverse('mainapp:index'))
 
     context = {
-        'login_form': login_form
+        'login_form': login_form,
+        'next_param': next_param,
     }
 
     return render(request, 'personal_account/login.html', context)
@@ -43,7 +50,7 @@ def register(request):
     }
     return render(request, 'personal_account/register.html', context)
 
-
+@login_required()
 def edit(request):
     if request.method == 'POST':
         edit_form = UserEditForm(request.POST, request.FILES, instance=request.user)
@@ -57,7 +64,7 @@ def edit(request):
     }
     return render(request, 'personal_account/edit.html', context)
 
-
+@login_required()
 def user(request):
     return render(request, 'personal_account/user.html')
 
@@ -69,7 +76,6 @@ class ListArticle(ListView):
     def get_queryset(self):
         return Article.objects.filter(user=self.request.user)
 
-
 class CreateArticle(CreateView):
     model = Article
     template_name = 'personal_account/article_create.html'
@@ -77,6 +83,10 @@ class CreateArticle(CreateView):
 
     def get_success_url(self):
         return reverse('personal_account:list_article')
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
 
 
 class EditArticle(UpdateView):
