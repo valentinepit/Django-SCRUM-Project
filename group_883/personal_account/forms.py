@@ -45,7 +45,7 @@ class UserEditForm(UserChangeForm):
 class CreateArticleForm(forms.ModelForm):
     class Meta:
         model = Article
-        fields = ('category', 'user', 'tag', 'title', 'short_desc', 'body', 'image')
+        fields = ('category', 'tag', 'title', 'short_desc', 'body', 'image')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

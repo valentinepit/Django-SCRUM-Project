@@ -36,7 +36,8 @@
                                         <div class="detail">
                                             <div class="time">{{ newest_article.created_at|date:'d E Y' }}</div>
                                             <div class="category"><a
-                                                    href="{% url 'mainapp:category_page' newest_article.category.pk 1 %}">{{ newest_article.category }}</a></div>
+                                                    href="{% url 'mainapp:category_page' newest_article.category.pk 1 %}">{{ newest_article.category }}</a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -54,7 +55,8 @@
                                             <h1 id="article-title"><a
                                                     href="{% url 'mainapp:article' item.pk %}">{{ item.title }}</a></h1>
                                             <div class="detail">
-                                                <div class="category"><a href="{% url 'mainapp:category_page' item.category.pk 1 %}">{{ item.category }}</a>
+                                                <div class="category"><a
+                                                        href="{% url 'mainapp:category_page' item.category.pk 1 %}">{{ item.category }}</a>
                                                 </div>
                                                 <div class="time">{{ item.created_at|date:'d E Y' }}</div>
                                             </div>
@@ -105,20 +107,22 @@
 
                             <p>{{ article.body }}</p>
                         </div>
-                                                                                            <ul>
-                                                <a class="btn btn-primary more"
-                                                   href="{% url 'personal_account:edit_article' article.pk %}">
-                                                    <div>Изменить</div>
-                                                    <div><i class="ion-ios-arrow-thin-right"></i></div>
-                                                </a>
-                                            </ul>
-                                            <ul>
-                                                <a class="btn btn-primary more"
-                                                   href="{% url 'personal_account:delete_article' article.pk %}">
-                                                    <div>Удалить</div>
-                                                    <div><i class="ion-ios-arrow-thin-right"></i></div>
-                                                </a>
-                                            </ul>
+                    {% if user.is_authenticated %}
+                        <ul>
+                            <a class="btn btn-primary more"
+                               href="{% url 'personal_account:edit_article' article.pk %}">
+                                <div>Изменить</div>
+                                <div><i class="ion-ios-arrow-thin-right"></i></div>
+                            </a>
+                        </ul>
+                        <ul>
+                            <a class="btn btn-primary more"
+                               href="{% url 'personal_account:delete_article' article.pk %}">
+                                <div>Удалить</div>
+                                <div><i class="ion-ios-arrow-thin-right"></i></div>
+                            </a>
+                        </ul>
+                    {% endif %}
                         <footer class="d-flex">
                             <div class="col">
                                 <ul class="tags">
@@ -131,11 +135,13 @@
                                 </ul>
                             </div>
                             <div class="col">
-                                    {% if user.is_authenticated %}
+
+                                {% if user.is_authenticated %}
                                     <div class='likes'>
                                         {% include 'mainapp/includes/inc_likes.html' %}
                                     </div>
-                                    {% else %}
+                                {% else %}
+
                                     <form action="{% url 'mainapp:like_article' article.pk %}" method="POST">
                                         {% csrf_token %}
                                         <button type="submit" class="love">
@@ -244,7 +250,9 @@
                                         <h2 id="article-title"><a
                                                 href="{% url 'mainapp:article' item.pk %}">{{ item.title }}</a></h2>
                                         <div class="detail">
-                                            <div class="category"><a href="{% url 'mainapp:category_page' item.category.pk 1 %}">{{ item.category }}</a></div>
+                                            <div class="category"><a
+                                                    href="{% url 'mainapp:category_page' item.category.pk 1 %}">{{ item.category }}</a>
+                                            </div>
                                             <div class="time">{{ item.created_at|date:'d E Y' }}</div>
                                         </div>
                                     </div>
@@ -324,25 +332,27 @@
 
                         </div>
 
-                    {% if user.is_authenticated%}
-                        <form class="form-group" method="post">
-{#                        <form class="form-group" method="post" action="{% url 'mainapp:article' article.pk %}">#}
-                            <div class="col-md-12">
-                                <h3 class="title">Оставьте ваш комментарий</h3>
-                            </div>
+                        {% if user.is_authenticated %}
+                            <form class="form-group" method="post">
+                                {#                        <form class="form-group" method="post" action="{% url 'mainapp:article' article.pk %}">#}
+                                <div class="col-md-12">
+                                    <h3 class="title">Оставьте ваш комментарий</h3>
+                                </div>
 
-                            {% csrf_token %}
-                            {{ comment_form|crispy }}
+                                {% csrf_token %}
+                                {{ comment_form|crispy }}
 
-                            <div class="form-group col-md-12">
-                                <button class="btn btn-primary" type="submit">Отправить</button>
-                            </div>
-                        </form>
-                    {% else %}
-{#                        <a class="title">Войдите чтобы оставить комментарий</a>#}
-                        Чтобы оставить комментарий
-                        <a href="{% url 'personal_account:login' %}"><button class="btn btn-primary">Войдите</button></a>
-                    {% endif %}
+                                <div class="form-group col-md-12">
+                                    <button class="btn btn-primary" type="submit">Отправить</button>
+                                </div>
+                            </form>
+                        {% else %}
+                            {#                        <a class="title">Войдите чтобы оставить комментарий</a>#}
+                            Чтобы оставить комментарий
+                            <a href="{% url 'personal_account:login' %}">
+                                <button class="btn btn-primary">Войдите</button>
+                            </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
