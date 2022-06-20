@@ -135,11 +135,13 @@
                                 </ul>
                             </div>
                             <div class="col">
+
                                 {% if user.is_authenticated %}
                                     <div class='likes'>
                                         {% include 'mainapp/includes/inc_likes.html' %}
                                     </div>
                                 {% else %}
+
                                     <form action="{% url 'mainapp:like_article' article.pk %}" method="POST">
                                         {% csrf_token %}
                                         <button type="submit" class="love">
@@ -147,9 +149,9 @@
                                             <div>{{ total_likes }}</div>
                                         </button>
                                     </form>
-                                {% endif %}
+                                    {% endif %}
 
-                            </div>
+                        </div>
                         </footer>
                     </article>
                     <div class="sharing">
