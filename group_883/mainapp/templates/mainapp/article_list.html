@@ -6,10 +6,15 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-3">
-                    <aside>
-                        <h2 class="aside-title">Search</h2>
+                    <aside class="aside">
+                        <h2 class="aside-title">Поиск</h2>
                         <div class="aside-body">
-                            <p>Search with other keywords or use filters for more accurate results.</p>
+                            <div class="nav-tabs-group">
+                                <ul class="nav-tabs-list">
+                                    <li class="active"><a href="{% url 'mainapp:search_results' %}">Название</a></li>
+                                    <li id="search_author"><a href="{% url 'mainapp:search_results' %}">Автор</a></li>
+                                </ul>
+                            </div>
                             <form action="{% url 'mainapp:search_results' %}" method="get">
                                 <div class="form-group">
                                     <div class="input-group">
@@ -22,34 +27,27 @@
                                         </div>
                                     </div>
                                 </div>
-                                <h2 class="aside-title">Filter</h2>
-                                <div class="group-title">Date</div>
-                                <div class="form-group">
-                                    <label><input type="radio" name="date" checked value='Anytime' > Anytime</label>
-                                </div>
-                                <div class="form-group">
-                                    <label><input type="radio" name="date" value='Today'> Today</label>
-                                </div>
-                                <div class="form-group">
-                                    <label><input type="radio" name="date" value='Last Week'> Last Week</label>
-                                </div>
-                                <div class="form-group">
-                                    <label><input type="radio" name="date" value='Last Month'> Last Month</label>
-                                </div>
-                                <br>
-                                <div class="group-title">Categories</div>
-                                {% for category in categories %}
+                                <div class="checkbox-group">
+                                    <h2 class="aside-title">Фильтр</h2>
+                                    <div class="group-title">Даты</div>
+                                    {% for period in time_filter %}
+                                        <div class="form-group">
+                                            <label><input type="radio" name="date" checked
+                                                          value='{{ period }}'> {{ period }}</label>
+                                        </div>
+                                    {% endfor %}
+                                    <br>
+                                    <div class="group-title">Категории</div>
+                                    {% for category in categories %}
+                                        <div class="form-group">
+                                            <label><input type="checkbox" name="category"
+                                                          value={{ category.title }}> {{ category.title }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
                                     <div class="form-group">
-                                        <label><input type="checkbox" name="category"
-                                                      value={{ category.title }}> {{ category.title }}
-                                        </label>
+                                        <label><input type="checkbox" name="category" value="" checked>Все категории</label>
                                     </div>
-                                {% endfor %}
-                                <div class="form-group">
-                                    <label><input type="checkbox" name="category" checked> All Categories</label>
-                                </div>
-                                <div class="input-group-btn">
-                                    <button class="btn btn-primary"><i class="ion-search"></i></button>
                                 </div>
                             </form>
                         </div>
@@ -110,23 +108,30 @@
                             </article>
                         {% endfor %}
                         {% if is_paginated %}
-                        <div class="col-md-12 text-center">
-                            <ul class="pagination">
-                                {% if page_obj.has_previous %}
-                                <li class="prev"><a href="?q={{ search_data }}&page={{ page_obj.previous_page_number }}"><i class="ion-ios-arrow-left"></i></a></li>
-                                {% endif %}
-                                {% for page in page_obj.paginator %}
-                                <li class="active"><a href="?q={{ search_data }}&page={{ page.number }}">{{ page.number }}</a></li>
-                                {% endfor %}
-                            {% if page_obj.has_next %}
-                                <li class="next"><a href="?q={{ search_data }}&page={{ page_obj.next_page_number }}"><i class="ion-ios-arrow-right"></i></a></li>
-                            {% endif %}
-                            </ul>
-                            <div class="pagination-help-text">
-                                Showing {{ page_obj.paginator.num_pages }} results of {{ count }} &mdash; Page {{ page_obj.number }}
+                            <div class="col-md-12 text-center">
+                                <ul class="pagination">
+                                    {% if page_obj.has_previous %}
+                                        <li class="prev"><a
+                                                href="?q={{ search_data }}&page={{ page_obj.previous_page_number }}"><i
+                                                class="ion-ios-arrow-left"></i></a></li>
+                                    {% endif %}
+                                    {% for page in page_obj.paginator %}
+                                        <li class="active"><a
+                                                href="?q={{ search_data }}&page={{ page.number }}">{{ page.number }}</a>
+                                        </li>
+                                    {% endfor %}
+                                    {% if page_obj.has_next %}
+                                        <li class="next"><a
+                                                href="?q={{ search_data }}&page={{ page_obj.next_page_number }}"><i
+                                                class="ion-ios-arrow-right"></i></a></li>
+                                    {% endif %}
+                                </ul>
+                                <div class="pagination-help-text">
+                                    Showing {{ page_obj.paginator.num_pages }} results of {{ count }} &mdash;
+                                    Page {{ page_obj.number }}
+                                </div>
                             </div>
-                        </div>
-                    {% endif %}
+                        {% endif %}
                     </div>
                 </div>
             </div>

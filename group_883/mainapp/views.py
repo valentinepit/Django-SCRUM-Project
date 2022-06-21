@@ -1,3 +1,5 @@
+from django.contrib.admin import ListFilter
+from django.db.models import Q
 from django.utils import timezone
 from datetime import timedelta
 from django.http import JsonResponse
@@ -9,6 +11,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from mainapp.models import Article, Category, Tag, Comment
 from mainapp.forms import CommentForm
 from django.views.generic import ListView
+from personal_account.models import User
 
 
 def index(request):
@@ -115,7 +118,13 @@ def article(request, pk):
     return render(request, 'mainapp/article.html', context)
 
 
-class SearchResultsView(ListView):
+class AuthorArticle:
+
+    def get_Article(self):
+        return Article.objects.filter(is_active=True)
+
+
+class SearchResultsView(AuthorArticle, ListView):
     model = Article
     template_name = 'search.html'
     paginate_by = 2
@@ -127,6 +136,7 @@ class SearchResultsView(ListView):
             'search_data': query,
             'categories': Category.objects.order_by('title'),
             'count': len(Article.objects.filter(title__icontains=query)),
+            'time_filter': ['За последний день', 'За последнюю неделю', 'За последний месяц', 'За все время'],
         })
         return context
 
@@ -136,32 +146,36 @@ class SearchResultsView(ListView):
             query = self.request.GET.get('q')
         if not query:
             query = ""
-        category_filter = self.category_filter()
-        date_filter = self.date_filter(category_filter)
-        result = date_filter.filter(title__icontains=query)
+        result = Article.objects.filter(
+                    Q(category__title__in=self.category_filter()),
+                    Q(created_at__gte=self.date_filter()),
+                    Q(title__icontains=query)
+                )
         return result
 
     def category_filter(self):
-        cat_filter = self.request.GET.getlist('category') if self.request.GET.getlist('category') else "on"
-        if "on" not in cat_filter:
-            return Article.objects.filter(category__title__in=cat_filter)
-        return Article.objects.all()
+        if self.request.GET.get('category') == '' or not self.request.GET.get('category') :
+            categories = [item.get('title') for item in Category.objects.values('title')]
+        else:
+            categories = self.request.GET.getlist('category')
+        return categories
 
-    def date_filter(self, _query):
-        date_filter = "Anytime" if not self.request.GET.get('date') else self.request.GET.get('date')
+    def date_filter(self):
+        _date_filter = self.request.GET.get('date')
         today = timezone.now()
         days_gap = 0
-        if "Anytime" == date_filter:
-            return _query.all()
-        if date_filter == 'Today':
+        if _date_filter == "За все время" or not _date_filter:
+            date_range = Article.objects.all().order_by('created_at').reverse()[:1].values()[0]["created_at"]\
+                         - timedelta(days=1)
+            return date_range
+        if _date_filter == 'За последний день':
             days_gap = 1
-        elif date_filter == 'Last Week':
+        elif _date_filter == 'За последнюю неделю':
             days_gap = 7
-        elif date_filter == 'Last Month':
+        elif _date_filter == 'За последний месяц':
             days_gap = 30
         date_range = today - timedelta(days=days_gap)
-        return _query.filter(created_at__gte=date_range)
-
+        return date_range
 
 def help(request):
     categories = Category.objects.all()
