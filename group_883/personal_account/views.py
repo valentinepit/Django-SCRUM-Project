@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib import auth
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, UpdateView, CreateView, DeleteView
@@ -50,6 +50,7 @@ def register(request):
     }
     return render(request, 'personal_account/register.html', context)
 
+
 @login_required()
 def edit(request):
     if request.method == 'POST':
@@ -64,6 +65,7 @@ def edit(request):
     }
     return render(request, 'personal_account/edit.html', context)
 
+
 @login_required()
 def user(request):
     return render(request, 'personal_account/user.html')
@@ -75,6 +77,7 @@ class ListArticle(ListView):
 
     def get_queryset(self):
         return Article.objects.filter(user=self.request.user)
+
 
 class CreateArticle(CreateView):
     model = Article
@@ -104,3 +107,8 @@ class DeleteArticle(DeleteView):
 
     def get_success_url(self):
         return reverse('personal_account:list_article')
+
+
+def password_change_done(request):
+    logout(request)
+    return redirect('personal_account:login')
