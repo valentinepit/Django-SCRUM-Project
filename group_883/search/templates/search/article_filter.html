@@ -1,4 +1,4 @@
-{% extends 'mainapp/base.html' %}
+{% extends 'search/base.html' %}
 {% load static %}
 {% block content %}
     <body>
@@ -9,16 +9,12 @@
                     <aside class="aside">
                         <h2 class="aside-title"></h2>
                         <div class="aside-body">
-
                             <form method="get">
-                                <div class="form-group">
-                                    {{ myFilter.form.as_p }}
-                                    <button class="btn btn-primary" type="submit">
-                                        Filter
-                                    </button>
-                                </div>
+                                {{ myFilter.form.as_p }}
+                                <button class="btn btn-primary" type="submit">
+                                    Filter
+                                </button>
                             </form>
-
                         </div>
                     </aside>
                 </div>
@@ -45,7 +41,7 @@
                         Search results for keyword "{{ search_data }}" found in {{ count }} posts.
                     </div>
                     <div class="row">
-                        {% for article in myFilter.qs %}
+                        {% for article in object_list %}
                             <article class="col-md-12 article-list">
                                 <div class="inner">
                                     <figure>

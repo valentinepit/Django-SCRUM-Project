@@ -10,9 +10,8 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 from mainapp.models import Article, Category, Tag, Comment
 from mainapp.forms import CommentForm
-from django.views.generic import ListView
 from personal_account.models import User
-from .filters import ArticleFilter
+
 
 
 def index(request):
@@ -120,95 +119,6 @@ def article(request, pk):
     }
     return render(request, 'mainapp/article.html', context)
 
-
-class AuthorArticle:
-
-    def get_Article(self):
-        return Article.objects.filter(is_active=True)
-
-
-class SearchResultsView(AuthorArticle, ListView):
-    model = Article
-    template_name = 'article_list.html'
-    paginate_by = 2
-
-    def get_context_data(self, **kwargs):
-        context = super(SearchResultsView, self).get_context_data(**kwargs)
-        query = self.request.GET.get('q')
-        if not query:
-            query = ""
-        articles = Article.objects.filter(title__icontains=query)
-        myFilter = ArticleFilter(self.request.GET, queryset=articles)
-        articles = myFilter.qs
-        context.update({
-            'search_data': query,
-            'categories': Category.objects.order_by('title'),
-            'count': len(Article.objects.filter(title__icontains=query)),
-            'time_filter': ['За последний день', 'За последнюю неделю', 'За последний месяц', 'За все время'],
-            'myFilter': myFilter,
-            'articles': articles,
-
-        })
-        return context
-
-
-    # def get_queryset(self):
-    #     query = None
-    #     if self.request.method == "GET":
-    #         query = self.request.GET.get('q')
-    #     if not query:
-    #         query = ""
-    #
-    #     result = Article.objects.filter(
-    #                 Q(category__title__in=self.category_filter()),
-    #                 Q(created_at__gte=self.date_filter()),
-    #                 Q(title__icontains=query)
-    #             )
-    #     return result
-
-    # def category_filter(self):
-    #     if self.request.GET.get('category') == '' or not self.request.GET.get('category'):
-    #         categories = [item.get('title') for item in Category.objects.values('title')]
-    #     else:
-    #         categories = self.request.GET.getlist('category')
-    #     return categories
-    #
-    # def date_filter(self):
-    #     _date_filter = self.request.GET.get('date')
-    #     today = timezone.now()
-    #     days_gap = 0
-    #     if _date_filter == "За все время" or not _date_filter:
-    #         date_range = Article.objects.all().order_by('created_at').reverse()[:1].values()[0]["created_at"]\
-    #                      - timedelta(days=1)
-    #         return date_range
-    #     if _date_filter == 'За последний день':
-    #         days_gap = 1
-    #     elif _date_filter == 'За последнюю неделю':
-    #         days_gap = 7
-    #     elif _date_filter == 'За последний месяц':
-    #         days_gap = 30
-    #     date_range = today - timedelta(days=days_gap)
-    #     return date_range
-
-
-class JsonFilterMoviesView(SearchResultsView, ListView):
-    """Фильтр фильмов в json"""
-    def get_queryset(self):
-        query = None
-        if self.request.method == "GET":
-            query = self.request.GET.get('q')
-        if not query:
-            query = ""
-        result = Article.objects.filter(
-                    Q(category__title__in=self.category_filter()),
-                    Q(created_at__gte=self.date_filter()),
-                    Q(title__icontains=query)
-                ).distinct().values("title")
-        return result
-
-    def get(self, request, *args, **kwargs):
-        queryset = list(self.get_queryset())
-        return JsonResponse({"articles": queryset}, safe=False)
 
 def help(request):
     categories = Category.objects.all()
