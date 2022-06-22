@@ -1,6 +1,8 @@
+import requests
+from django.urls import reverse
 from django.utils import timezone
 from datetime import timedelta
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
@@ -8,7 +10,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 from mainapp.models import Article, Category, Tag, Comment
 from mainapp.forms import CommentForm
-from django.views.generic import ListView
+from django.views.generic import ListView, UpdateView, CreateView
 
 
 def index(request):
@@ -95,6 +97,7 @@ def article(request, pk):
         if comment_form.is_valid():
             new_comment = comment_form.save(commit=False)
             new_comment.article = article
+            new_comment.user = request.user
             new_comment.save()
     else:
         comment_form = CommentForm()
@@ -115,6 +118,62 @@ def article(request, pk):
         'comment_form': comment_form,
     }
     return render(request, 'mainapp/article.html', context)
+
+
+def comment_remove(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+    comment.delete()
+    print(request.META.get('HTTP_REFERER'))
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+class CommentUpdateView(UpdateView):
+    model = Comment
+    template_name = 'mainapp/comment_form.html'
+    form_class = CommentForm
+
+    def get_success_url(self):
+        comment = Comment.objects.get(pk=self.kwargs['pk'])
+        return reverse('mainapp:article', args=[comment.article.pk])
+
+
+def comment_create(request, article_pk, pk):
+
+
+
+    if request.method == 'POST':
+        comment_form = CommentForm(data=request.POST)
+        context = {
+            'form': comment_form
+        }
+
+        if comment_form.is_valid():
+            new_comment = comment_form.save(commit=False)
+            new_comment.article = Article.objects.get(pk=article_pk)
+            new_comment.user = request.user
+            new_comment.parent = Comment.objects.get(pk=pk)
+            new_comment.save()
+            return HttpResponseRedirect(reverse('mainapp:article', args=[new_comment.article.pk]))
+    else:
+        comment_form = CommentForm()
+        context = {
+            'form': comment_form
+        }
+    return render(request, 'mainapp/comment_form.html', context)
+
+
+# class CommentCreateView(CreateView):
+#     model = Comment
+#     template_name = 'mainapp/comment_form.html'
+#     form_class = CommentForm
+#
+#     # def get_object(self, queryset=None):
+#     # comment = Comment.objects.get(pk=self.kwargs['pk'])
+#     # comment.user = self.request.user
+#     # comment.article.pk = self.kwargs.get('article_pk')
+#
+#     def get_success_url(self):
+#         return reverse('mainapp:article', args=[self.kwargs['article_pk']])
 
 
 class SearchResultsView(ListView):

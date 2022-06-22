@@ -31,7 +31,6 @@ class Article(models.Model):
     is_active = models.BooleanField(default=True)
     likes = models.ManyToManyField(User, related_name='liked_articles')
 
-
     def total_likes(self):
         return self.likes.count()
 
@@ -53,9 +52,22 @@ class Comment(models.Model):
     created_at = models.DateTimeField(verbose_name='Дата создания', auto_now_add=True)
     updated_at = models.DateTimeField(verbose_name='Дата обновления', auto_now=True)
     is_active = models.BooleanField(default=True)
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ['-updated_at']
 
     def __str__(self):
         return self.body
+
+    def children(self):
+        return Comment.objects.filter(parent=self)
+
+    @property
+    def is_parent(self):
+        if self.parent is not None:
+            return False
+        return True
 
 
 class Like(models.Model):

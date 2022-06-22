@@ -95,8 +95,9 @@
                             <ul class="details">
                                 <li>Опубликовано {{ article.created_at|date:'d E Y' }}</li>
                                 <li><a>{{ article.category }}</a></li>
+
                                 <li>By <a
-                                        href="{% url 'personal_account:our_user' article.user.pk %}">{{ article.user }}</a>
+                                        {% if user.pk == article.user.pk %}href="{% url 'personal_account:user'%}"{% else %}href="{% url 'personal_account:our_user' article.user.pk %}"{% endif %}>{{ article.user }}</a>
                                 </li>
                             </ul>
                         </header>
@@ -266,6 +267,28 @@
 
                     </div>
                     <div class="line thin"></div>
+
+                {% if user.is_authenticated %}
+                            <form class="form-group" method="post">
+                                {#                        <form class="form-group" method="post" action="{% url 'mainapp:article' article.pk %}">#}
+                                <div class="col-md-12">
+                                    <h3 class="title">Оставьте ваш комментарий</h3>
+                                </div>
+
+                                {% csrf_token %}
+                                {{ comment_form|crispy }}
+
+                                <div class="form-group col-md-12">
+                                    <button class="btn btn-primary" type="submit">Отправить</button>
+                                </div>
+                            </form>
+                        {% else %}
+                            Чтобы оставить комментарий
+                            <a href="{% url 'personal_account:login' %}">
+                                <button class="btn btn-primary">Войдите</button>
+                            </a>
+                        {% endif %}
+
                     <div class="comments">
                         <h2 class="title">Комментарии {{ commnets.count }}</h2>
                         <div class="comment-list">
@@ -279,9 +302,15 @@
                                             <h5 class="name">{{ comment.user.username }}</h5>
                                             <div class="time">{{ comment.created_at }}</div>
                                             <div class="description">{{ comment.body }}</div>
-                                            <footer>
-                                                <a href="#">Ответить</a>
-                                            </footer>
+                                            {% if user.is_authenticated %}
+                                                <footer class="d-flex justify-content-start">
+                                                    <a class="mr-5" href="{% url 'mainapp:comment_create' article.pk comment.pk %}">Ответить</a>
+                                                    {% if comment.user == user %}
+                                                        <a class="mx-5" href="{% url 'mainapp:comment_update' comment.pk %}">Редактировать</a>
+                                                        <a href="{% url 'mainapp:comment_remove' comment.pk %}">Удалить</a>
+                                                    {% endif %}
+                                                </footer>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </div>
@@ -336,27 +365,7 @@
 
                         </div>
 
-                        {% if user.is_authenticated %}
-                            <form class="form-group" method="post">
-                                {#                        <form class="form-group" method="post" action="{% url 'mainapp:article' article.pk %}">#}
-                                <div class="col-md-12">
-                                    <h3 class="title">Оставьте ваш комментарий</h3>
-                                </div>
 
-                                {% csrf_token %}
-                                {{ comment_form|crispy }}
-
-                                <div class="form-group col-md-12">
-                                    <button class="btn btn-primary" type="submit">Отправить</button>
-                                </div>
-                            </form>
-                        {% else %}
-                            {#                        <a class="title">Войдите чтобы оставить комментарий</a>#}
-                            Чтобы оставить комментарий
-                            <a href="{% url 'personal_account:login' %}">
-                                <button class="btn btn-primary">Войдите</button>
-                            </a>
-                        {% endif %}
                     </div>
                 </div>
             </div>
