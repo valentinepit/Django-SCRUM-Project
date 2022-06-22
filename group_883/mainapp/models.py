@@ -31,7 +31,6 @@ class Article(models.Model):
     is_active = models.BooleanField(default=True)
     likes = models.ManyToManyField(User, related_name='liked_articles')
 
-
     def total_likes(self):
         return self.likes.count()
 
