@@ -2,26 +2,29 @@
 {% load static %}
 
 {% block content %}
-        <div class="container">
-            <div class="box-wrapper">
-                <div class="box box-border">
-                    <div class="box-body">
-                        <h4>Login</h4>
-                        <form action="{% url 'personal_account:login' %}" method="post">
-                            {% csrf_token %}
-                            {{ login_form.as_p }}
-                            {% if next_param %}
-                                <input type="hidden" name="next" value="{{ next_param }}">
-                            {% endif %}
-                            <button class="btn btn-primary" type="submit">Войти</button>
-                            <ul>
-                                <a href="{% url 'personal_account:register' %}">Регистрация</a>
-                            </ul>
-                        </form>
-                    </div>
+    <div class="container">
+        <div class="box-wrapper">
+            <div class="box box-border">
+                <div class="box-body">
+                    <h4>Login</h4>
+                    <form action="{% url 'personal_account:login' %}" method="post">
+                        {% csrf_token %}
+                        {{ login_form.as_p }}
+                        {% if next_param %}
+                            <input type="hidden" name="next" value="{{ next_param }}">
+                        {% endif %}
+                        <button class="btn btn-primary" type="submit">Войти</button>
+                        <ul>
+                            <a href="{% url 'social:begin' 'vk-oauth2' %}?next=/">Войти через вк</a>
+                        </ul>
+                        <ul>
+                            <a href="{% url 'personal_account:register' %}">Регистрация</a>
+                        </ul>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-</div>
+    </div>
+    </div>
 {% endblock %}
