@@ -83,6 +83,7 @@ def article(request, pk):
     newest_article = Article.objects.all().last()
     articles = Article.objects.all().order_by('-id')
     tags = Tag.objects.all()
+    total_likes = article.total_likes()
 
     if article.likes.filter(id=request.user.id).exists():
         liked = True
@@ -114,6 +115,7 @@ def article(request, pk):
         'new_comment': new_comment,
         # 'total_likes': total_likes,
         'liked': liked,
+        'comment_form': comment_form,
     }
     return render(request, 'mainapp/article.html', context)
 
