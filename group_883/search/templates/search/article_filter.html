@@ -1,4 +1,4 @@
-{% extends 'mainapp/base.html' %}
+{% extends 'search/base.html' %}
 {% load static %}
 {% block content %}
     <body>
@@ -9,54 +9,21 @@
                     <aside class="aside">
                         <h2 class="aside-title"></h2>
                         <div class="aside-body">
-
                             <form method="get">
-                                <div class="form-group">
-                                    {{ myFilter.form.as_p }}
-                                    <button class="btn btn-primary" type="submit">
-                                        Filter
-                                    </button>
-                                </div>
-                                <h2 class="aside-title">Filter</h2>
-                                <div class="group-title">Date</div>
-                                <div class="form-group">
-                                    <label><input type="radio" name="date" checked value='Anytime'> Anytime</label>
-                                </div>
-                                <div class="form-group">
-                                    <label><input type="radio" name="date" value='Today'> Today</label>
-                                </div>
-                                <div class="form-group">
-                                    <label><input type="radio" name="date" value='Last Week'> Last Week</label>
-                                </div>
-                                <div class="form-group">
-                                    <label><input type="radio" name="date" value='Last Month'> Last Month</label>
-                                </div>
-                                <br>
-                                <div class="group-title">Categories</div>
-                                {% for category in categories %}
-                                    <div class="form-group">
-                                        <label><input type="checkbox" name="category"
-                                                      value={{ category.title }}> {{ category.title }}
-                                        </label>
-                                    </div>
-                                {% endfor %}
-                                <div class="form-group">
-                                    <label><input type="checkbox" name="category" checked> All Categories</label>
-                                </div>
-                                <div class="input-group-btn">
-                                    <button class="btn btn-primary"><i class="ion-search"></i></button>
-                                </div>
+                                {{ myFilter.form.as_p }}
+                                <button class="btn btn-primary" type="submit">
+                                    Filter
+                                </button>
                             </form>
-
                         </div>
                     </aside>
                 </div>
                 <div class="col-md-9">
                     <div class="nav-tabs-group">
                         <ul class="nav-tabs-list">
-                            <li {% if request.resolver_match.url_name == 'search_results' %} class="active"{% endif %}><a href="#">All</a></li>
+                            <li class="active"><a href="#">All</a></li>
                             <li><a href="#">Latest</a></li>
-                            <li {% if 'popular' in request.resolver_match.route %} class="active"{% endif %}><a href="{% url 'search:popular' %}">Popular</a></li>
+                            <li><a href="#">Popular</a></li>
                             <li><a href="#">Trending</a></li>
                             <li><a href="#">Videos</a></li>
                         </ul>
@@ -74,7 +41,7 @@
                         Search results for keyword "{{ search_data }}" found in {{ count }} posts.
                     </div>
                     <div class="row">
-                        {% for article in myFilter.qs %}
+                        {% for article in object_list %}
                             <article class="col-md-12 article-list">
                                 <div class="inner">
                                     <figure>
@@ -94,7 +61,7 @@
                                         </p>
                                         <footer>
                                             <a href="#" class="love"><i class="ion-android-favorite-outline"></i>
-                                                <div>{{ article.total_likes }}</div>
+                                                <div>{{ article.like }}</div>
                                             </a>
                                             <a class="btn btn-primary more" href={% url 'mainapp:article' article.pk %}>
                                                 <div>More</div>
