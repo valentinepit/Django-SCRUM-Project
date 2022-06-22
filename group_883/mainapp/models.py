@@ -19,9 +19,9 @@ class Tag(models.Model):
 
 
 class Article(models.Model):
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    tag = models.ForeignKey(Tag, on_delete=models.PROTECT, blank=True, null=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Категория')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Автор')
+    tag = models.ForeignKey(Tag, on_delete=models.PROTECT, blank=True, null=True, verbose_name='Тэг')
     title = models.CharField(verbose_name='Заголовок', max_length=250)
     short_desc = models.CharField(verbose_name='Краткое описание', max_length=500, blank=True)
     body = models.TextField(verbose_name='Текст')

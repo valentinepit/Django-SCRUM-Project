@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'search.apps.SearchConfig',
     'social_django',
     'crispy_forms',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
