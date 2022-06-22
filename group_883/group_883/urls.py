@@ -25,6 +25,8 @@ urlpatterns = [
     path('search/', include('search.urls', namespace='search')),
     path('auth/', include('personal_account.urls', namespace='personal_account')),
     path('auth', include('personal_account.urls'), name='auth'),
+
+    path('search/', include('search.urls')),
 ]
 
 if settings.DEBUG:

@@ -1,8 +1,8 @@
-from django.contrib.admin import ListFilter
-from django.db.models import Q
+import requests
+from django.urls import reverse
 from django.utils import timezone
 from datetime import timedelta
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
@@ -10,8 +10,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 from mainapp.models import Article, Category, Tag, Comment
 from mainapp.forms import CommentForm
-from personal_account.models import User
-
+from django.views.generic import ListView, UpdateView, CreateView
 
 
 def index(request):
@@ -98,6 +97,7 @@ def article(request, pk):
         if comment_form.is_valid():
             new_comment = comment_form.save(commit=False)
             new_comment.article = article
+            new_comment.user = request.user
             new_comment.save()
     else:
         comment_form = CommentForm()
@@ -113,11 +113,114 @@ def article(request, pk):
         'tags': tags[:10],
         'commnets': comments,
         'new_comment': new_comment,
-        # 'total_likes': total_likes,
+        'total_likes': total_likes,
         'liked': liked,
         'comment_form': comment_form,
     }
     return render(request, 'mainapp/article.html', context)
+
+
+def comment_remove(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+    comment.delete()
+    print(request.META.get('HTTP_REFERER'))
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+class CommentUpdateView(UpdateView):
+    model = Comment
+    template_name = 'mainapp/comment_form.html'
+    form_class = CommentForm
+
+    def get_success_url(self):
+        comment = Comment.objects.get(pk=self.kwargs['pk'])
+        return reverse('mainapp:article', args=[comment.article.pk])
+
+
+def comment_create(request, article_pk, pk):
+
+
+
+    if request.method == 'POST':
+        comment_form = CommentForm(data=request.POST)
+        context = {
+            'form': comment_form
+        }
+
+        if comment_form.is_valid():
+            new_comment = comment_form.save(commit=False)
+            new_comment.article = Article.objects.get(pk=article_pk)
+            new_comment.user = request.user
+            new_comment.parent = Comment.objects.get(pk=pk)
+            new_comment.save()
+            return HttpResponseRedirect(reverse('mainapp:article', args=[new_comment.article.pk]))
+    else:
+        comment_form = CommentForm()
+        context = {
+            'form': comment_form
+        }
+    return render(request, 'mainapp/comment_form.html', context)
+
+
+# class CommentCreateView(CreateView):
+#     model = Comment
+#     template_name = 'mainapp/comment_form.html'
+#     form_class = CommentForm
+#
+#     # def get_object(self, queryset=None):
+#     # comment = Comment.objects.get(pk=self.kwargs['pk'])
+#     # comment.user = self.request.user
+#     # comment.article.pk = self.kwargs.get('article_pk')
+#
+#     def get_success_url(self):
+#         return reverse('mainapp:article', args=[self.kwargs['article_pk']])
+
+
+class SearchResultsView(ListView):
+    model = Article
+    template_name = 'search.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(SearchResultsView, self).get_context_data(**kwargs)
+        query = self.request.GET.get('q')
+        context.update({
+            'search_data': query,
+            'categories': Category.objects.order_by('title'),
+            'count': len(Article.objects.filter(title__icontains=query)),
+        })
+        return context
+
+    def get_queryset(self):
+        query = None
+        if self.request.method == "GET":
+            query = self.request.GET.get('q')
+        if not query:
+            query = ""
+        category_filter = self.category_filter()
+        date_filter = self.date_filter(category_filter)
+        result = date_filter.filter(title__icontains=query)
+        return result
+
+    def category_filter(self):
+        cat_filter = self.request.GET.getlist('category') if self.request.GET.getlist('category') else "on"
+        if "on" not in cat_filter:
+            return Article.objects.filter(category__title__in=cat_filter)
+        return Article.objects.all()
+
+    def date_filter(self, _query):
+        date_filter = "Anytime" if not self.request.GET.get('date') else self.request.GET.get('date')
+        today = timezone.now()
+        days_gap = 0
+        if "Anytime" == date_filter:
+            return _query.all()
+        if date_filter == 'Today':
+            days_gap = 1
+        elif date_filter == 'Last Week':
+            days_gap = 7
+        elif date_filter == 'Last Month':
+            days_gap = 30
+        date_range = today - timedelta(days=days_gap)
+        return _query.filter(created_at__gte=date_range)
 
 
 def help(request):
