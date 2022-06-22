@@ -1,10 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'personal_account/base.html' %}
+{% load static %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="box-wrapper">
+            <div class="box box-border">
+                <div class="box-body">
+                    <h4>Пользователь {{ article.user.username }}</h4>
+                    <h5>{{ user.username }}</h5>
+                    <img src="/media/{{ user.foto }}" width="300px" height="300px">
+                    <p>{{ user.first_name }}</p>
+                    <p>{{ user.last_name }}</p>
+                    <p>{{ user.email }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

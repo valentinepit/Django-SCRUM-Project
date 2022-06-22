@@ -13,7 +13,7 @@ from django.views.generic import ListView
 
 def index(request):
     categories = Category.objects.all()
-    articles = Article.objects.all()
+    articles = Article.objects.filter(is_active=True)
     read_now = Article.objects.all()
     news = Article.objects.all()
     tags = Tag.objects.all()
@@ -43,7 +43,7 @@ def category(request, pk, page=1):
         }
     else:
         current_category = get_object_or_404(Category, pk=pk)
-        category_articles = Article.objects.filter(category__pk=current_category.pk)
+        category_articles = Article.objects.filter(category__pk=current_category.pk).filter(is_active=True)
 
     newest_article = Article.objects.all().last()
     articles = Article.objects.all().order_by('-id')

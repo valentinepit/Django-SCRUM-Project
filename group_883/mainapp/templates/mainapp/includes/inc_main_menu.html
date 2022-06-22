@@ -22,10 +22,11 @@
                 {% for category in categories %}
                 <li><a href="{% url 'mainapp:category_page' category.pk 1 %}">{{ category.title }}</a></li>
                 {% endfor %}
-                <li class="dropdown magz-dropdown"><a href="{% url 'personal_account:user' %}">Кабинет <i
+            {% for user_item in user_list %}
+                <li class="dropdown magz-dropdown"><a href="{% url 'personal_account:user' user_item.pk%}">Кабинет <i
                         class="ion-ios-arrow-right"></i></a>
                     <ul class="dropdown-menu">
-                        <li><a href="{% url 'personal_account:user' %}"><i class="icon ion-person"></i> My Account</a></li>
+                        <li><a href="{% url 'personal_account:user' user.pk%}"><i class="icon ion-person"></i> My Account</a></li>
                         <li><a href="#"><i class="icon ion-heart"></i> Favorite</a></li>
                         <li><a href="#"><i class="icon ion-chatbox"></i> Comments</a></li>
                         <li><a href="#"><i class="icon ion-key"></i> Change Password</a></li>
@@ -38,6 +39,7 @@
                         {% endif %}
                     </ul>
                 </li>
+            {% endfor %}
                 <li><a href="{% url 'mainapp:help' %}">Помощь</a></li>
             </ul>
         </div>

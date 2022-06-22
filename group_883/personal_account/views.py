@@ -3,10 +3,11 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.contrib import auth
 from django.urls import reverse, reverse_lazy
-from django.views.generic import ListView, UpdateView, CreateView, DeleteView
+from django.views.generic import ListView, UpdateView, CreateView, DeleteView, DetailView
 
 from personal_account.forms import UserLoginForm, UserRegisterForm, UserEditForm, CreateArticleForm
 from mainapp.models import Article
+from .models import User
 
 
 def login(request):
@@ -71,12 +72,17 @@ def user(request):
     return render(request, 'personal_account/user.html')
 
 
+class UserDetail(DetailView):
+    model = User
+    template_name = 'personal_account/our_account.html'
+
+
 class ListArticle(ListView):
     model = Article
     template_name = 'personal_account/article_list.html'
 
     def get_queryset(self):
-        return Article.objects.filter(user=self.request.user)
+        return Article.objects.filter(user=self.request.user).filter(is_active=True)
 
 
 class CreateArticle(CreateView):
@@ -99,6 +105,10 @@ class EditArticle(UpdateView):
 
     def get_success_url(self):
         return reverse('personal_account:list_article')
+
+    def get_queryset(self):
+        if self.request.user:
+            return Article.objects.filter(is_active=True).filter(user=self.request.user)
 
 
 class DeleteArticle(DeleteView):

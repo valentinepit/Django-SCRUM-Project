@@ -25,7 +25,7 @@
                                 <h2 class="aside-title">Filter</h2>
                                 <div class="group-title">Date</div>
                                 <div class="form-group">
-                                    <label><input type="radio" name="date" checked value='Anytime' > Anytime</label>
+                                    <label><input type="radio" name="date" checked value='Anytime'> Anytime</label>
                                 </div>
                                 <div class="form-group">
                                     <label><input type="radio" name="date" value='Today'> Today</label>
@@ -104,22 +104,22 @@
                                                 <div>More</div>
                                                 <div><i class="ion-ios-arrow-thin-right"></i></div>
                                             </a>
-                                                                {% if user.is_authenticated %}
-                        <ul>
-                            <a class="btn btn-primary more"
-                               href="{% url 'personal_account:edit_article' article.pk %}">
-                                <div>Изменить</div>
-                                <div><i class="ion-ios-arrow-thin-right"></i></div>
-                            </a>
-                        </ul>
-                        <ul>
-                            <a class="btn btn-primary more"
-                               href="{% url 'personal_account:delete_article' article.pk %}">
-                                <div>Удалить</div>
-                                <div><i class="ion-ios-arrow-thin-right"></i></div>
-                            </a>
-                        </ul>
-                    {% endif %}
+                                            {% if user.is_authenticated %}
+                                                <ul>
+                                                    <a class="btn btn-primary more"
+                                                       href="{% url 'personal_account:edit_article' article.pk %}">
+                                                        <div>Изменить</div>
+                                                        <div><i class="ion-ios-arrow-thin-right"></i></div>
+                                                    </a>
+                                                </ul>
+                                                <ul>
+                                                    <a class="btn btn-primary more"
+                                                       href="{% url 'personal_account:delete_article' article.pk %}">
+                                                        <div>Удалить</div>
+                                                        <div><i class="ion-ios-arrow-thin-right"></i></div>
+                                                    </a>
+                                                </ul>
+                                            {% endif %}
                                         </footer>
                                     </div>
                                 </div>
