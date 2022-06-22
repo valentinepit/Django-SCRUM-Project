@@ -40,7 +40,6 @@
     transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
 }
 
-/*#menu-item {*/
-/*  !*font-size: 0.9em;*!*/
-/*  font-size: 1.4em;*/
-/*}*/
+#comment-button {
+    margin-bottom: 10px;
+}
