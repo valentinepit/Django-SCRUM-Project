@@ -165,97 +165,26 @@
                         <h1 class="aside-title">Лучшие Блоги <a href="#" class="all">Все <i
                                 class="ion-ios-arrow-right"></i></a></h1>
                         <div class="aside-body">
+                            {% for author in best_authors %}
                             <article class="article-mini">
                                 <div class="">
                                     <div class="d-flex flex-row justify-content-around">
                                         <figure class="bloger"><img class="photo-bloger"
-                                                                    src="{% static 'images/img01.jpg' %}">
+                                                                    src="/media/{{ user.foto }}}">
                                         </figure>
-                                        <h5 class="name"><a id="bloger-name" href="article.html">John Doe</a></h5>
+                                        <h5 class="name"><a id="bloger-name" href="#">
+                                            {% if author.get_full_name %}
+                                                {{ author.get_full_name }}
+                                            {% else %}
+                                                Пользователь
+                                            {% endif %}</a></h5>
                                         <a href="#" class="love"><i class="ion-android-favorite-outline"></i>
-                                            <div>1263</div>
+                                            <div>{{ author.total_likes }}</div>
                                         </a>
                                     </div>
                                 </div>
                             </article>
-                            <article class="article-mini">
-                                <div class="">
-                                    <div class="d-flex flex-row justify-content-around">
-                                        <figure class="bloger"><img class="photo-bloger"
-                                                                    src="{% static 'images/img01.jpg' %}">
-                                        </figure>
-                                        <h5 class="name"><a id="bloger-name" href="article.html">John Doe</a></h5>
-                                        <a href="#" class="love"><i class="ion-android-favorite-outline"></i>
-                                            <div>1263</div>
-                                        </a>
-                                    </div>
-                                </div>
-                            </article>
-                            <article class="article-mini">
-                                <div class="">
-                                    <div class="d-flex flex-row justify-content-around">
-                                        <figure class="bloger"><img class="photo-bloger"
-                                                                    src="{% static 'images/img01.jpg' %}">
-                                        </figure>
-                                        <h5 class="name"><a id="bloger-name" href="article.html">John Doe</a></h5>
-                                        <a href="#" class="love"><i class="ion-android-favorite-outline"></i>
-                                            <div>1263</div>
-                                        </a>
-                                    </div>
-                                </div>
-                            </article>
-                            <article class="article-mini">
-                                <div class="">
-                                    <div class="d-flex flex-row justify-content-around">
-                                        <figure class="bloger"><img class="photo-bloger"
-                                                                    src="{% static 'images/img01.jpg' %}">
-                                        </figure>
-                                        <h5 class="name"><a id="bloger-name" href="article.html">John Doe</a></h5>
-                                        <a href="#" class="love"><i class="ion-android-favorite-outline"></i>
-                                            <div>1263</div>
-                                        </a>
-                                    </div>
-                                </div>
-                            </article>
-                            <article class="article-mini">
-                                <div class="">
-                                    <div class="d-flex flex-row justify-content-around">
-                                        <figure class="bloger"><img class="photo-bloger"
-                                                                    src="{% static 'images/img01.jpg' %}">
-                                        </figure>
-                                        <h5 class="name"><a id="bloger-name" href="article.html">John Doe</a></h5>
-                                        <a href="#" class="love"><i class="ion-android-favorite-outline"></i>
-                                            <div>1263</div>
-                                        </a>
-                                    </div>
-                                </div>
-                            </article>
-                            <article class="article-mini">
-                                <div class="">
-                                    <div class="d-flex flex-row justify-content-around">
-                                        <figure class="bloger"><img class="photo-bloger"
-                                                                    src="{% static 'images/img01.jpg' %}">
-                                        </figure>
-                                        <h5 class="name"><a id="bloger-name" href="article.html">John Doe</a></h5>
-                                        <a href="#" class="love"><i class="ion-android-favorite-outline"></i>
-                                            <div>1263</div>
-                                        </a>
-                                    </div>
-                                </div>
-                            </article>
-                            <article class="article-mini">
-                                <div class="">
-                                    <div class="d-flex flex-row justify-content-around">
-                                        <figure class="bloger"><img class="photo-bloger"
-                                                                    src="{% static 'images/img01.jpg' %}">
-                                        </figure>
-                                        <h5 class="name"><a id="bloger-name" href="article.html">John Doe</a></h5>
-                                        <a href="#" class="love"><i class="ion-android-favorite-outline"></i>
-                                            <div>1263</div>
-                                        </a>
-                                    </div>
-                                </div>
-                            </article>
+                            {% endfor %}
                         </div>
                     </aside>
                 </div>

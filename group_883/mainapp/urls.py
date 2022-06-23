@@ -9,7 +9,6 @@ urlpatterns = [
     path('category/<int:pk>/<int:page>/', mainapp.category, name='category_page'),
     path('article/<int:pk>/', mainapp.article, name='article'),
     path('help/', mainapp.help, name='help'),
-    path('like/<int:pk>/', mainapp.like, name='like_article'),
     path('comment/remove/<int:pk>/', mainapp.comment_remove, name='comment_remove'),
     path('comment/update/<int:pk>/', mainapp.CommentUpdateView.as_view(), name='comment_update'),
     # path('comment/create/<int:article_pk>/<int:pk>/', mainapp.CommentCreateView.as_view(), name='comment_create')
