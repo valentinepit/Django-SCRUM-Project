@@ -43,3 +43,10 @@
 #comment-button {
     margin-bottom: 10px;
 }
+
+#reply-box {
+    margin-bottom: 0;
+    margin-top: 0;
+    padding-bottom: 0;
+}
+

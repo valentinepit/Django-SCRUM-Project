@@ -248,26 +248,26 @@
                     </div>
                     <div class="line thin"></div>
 
-                {% if user.is_authenticated %}
-                            <form class="form-group" method="post">
-                                {#                        <form class="form-group" method="post" action="{% url 'mainapp:article' article.pk %}">#}
-                                <div class="col-md-12">
-                                    <h3 class="title">Оставьте ваш комментарий</h3>
-                                </div>
+                    {% if user.is_authenticated %}
+                        <form class="form-group" method="post">
+                            {#                        <form class="form-group" method="post" action="{% url 'mainapp:article' article.pk %}">#}
+                            <div class="col-md-12">
+                                <h3 class="title">Оставьте ваш комментарий</h3>
+                            </div>
 
-                                {% csrf_token %}
-                                {{ comment_form|crispy }}
+                            {% csrf_token %}
+                            {{ comment_form|crispy }}
 
-                                <div class="form-group col-md-12">
-                                    <button class="btn btn-primary" type="submit">Отправить</button>
-                                </div>
-                            </form>
-                        {% else %}
-                            Чтобы оставить комментарий
-                            <a href="{% url 'personal_account:login' %}">
-                                <button class="btn btn-primary">Войдите</button>
-                            </a>
-                        {% endif %}
+                            <div class="form-group col-md-12">
+                                <button class="btn btn-primary" type="submit">Отправить</button>
+                            </div>
+                        </form>
+                    {% else %}
+                        Чтобы оставить комментарий
+                        <a href="{% url 'personal_account:login' %}">
+                            <button class="btn btn-primary">Войдите</button>
+                        </a>
+                    {% endif %}
 
                     <div class="comments">
                         <h2 class="title">Комментарии {{ commnets.count }}</h2>
@@ -284,65 +284,42 @@
                                             <div class="description">{{ comment.body }}</div>
                                             {% if user.is_authenticated %}
                                                 <footer class="d-flex justify-content-start">
-                                                    <a class="mr-5" href="{% url 'mainapp:comment_create' article.pk comment.pk %}">Ответить</a>
+                                                    <a class="mr-5"
+                                                       href="{% url 'mainapp:comment_create' article.pk comment.pk %}">Ответить</a>
                                                     {% if comment.user == user %}
-                                                        <a class="mx-5" href="{% url 'mainapp:comment_update' comment.pk %}">Редактировать</a>
+                                                        <a class="mx-5"
+                                                           href="{% url 'mainapp:comment_update' comment.pk %}">Редактировать</a>
                                                         <a href="{% url 'mainapp:comment_remove' comment.pk %}">Удалить</a>
                                                     {% endif %}
                                                 </footer>
                                             {% endif %}
                                         </div>
                                     </div>
+                                    <div class="reply-list">
+                                        {% for reply in comment.children %}
+                                            <div class="item" id="reply-box">
+                                                <div class="user">
+                                                    <figure>
+                                                        <img src="/media/{{ reply.user.foto }}">
+                                                    </figure>
+                                                    <div class="details">
+                                                        <h5 class="name">{{ reply.user.username }}</h5>
+                                                        <div class="time">{{ reply.created_at }}</div>
+                                                        <div class="description">{{ reply.body }}</div>
+                                                        <footer class="d-flex justify-content-start">
+                                                            {% if reply.user == user %}
+                                                                <a class="mx-5"
+                                                                   href="{% url 'mainapp:comment_update' reply.pk %}">Редактировать</a>
+                                                                <a href="{% url 'mainapp:comment_remove' reply.pk %}">Удалить</a>
+                                                            {% endif %}
+                                                        </footer>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
                                 </div>
                             {% endfor %}
-                            <div class="item">
-                                <div class="user">
-                                    <figure>
-                                        <img src="{% static 'images/img01.jpg' %}">
-                                    </figure>
-                                    <div class="details">
-                                        <h5 class="name">Mark Otto</h5>
-                                        <div class="time">24 Hours</div>
-                                        <div class="description">
-                                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                                            tempor incididunt ut labore et dolore <a href="#">magna</a> aliqua. Ut enim
-                                            ad
-                                            minim veniam,
-                                            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.
-                                        </div>
-                                        <footer>
-                                            <a href="#">Reply</a>
-                                        </footer>
-                                    </div>
-                                </div>
-                                <div class="reply-list">
-                                    <div class="item">
-                                        <div class="user">
-                                            <figure>
-                                                <img src="{% static 'images/img01.jpg' %}">
-                                            </figure>
-                                            <div class="details">
-                                                <h5 class="name">Mark Otto</h5>
-                                                <div class="time">24 Hours</div>
-                                                <div class="description">
-                                                    Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                                                    commodo
-                                                    consequat. Duis aute irure dolor in reprehenderit in voluptate velit
-                                                    esse
-                                                    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-                                                    cupidatat non
-                                                    proident, sunt in culpa qui officia deserunt mollit anim id est
-                                                    laborum.
-                                                </div>
-                                                <footer>
-                                                    <a href="#">Reply</a>
-                                                </footer>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
                         </div>
 
 
