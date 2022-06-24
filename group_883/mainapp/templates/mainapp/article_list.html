@@ -74,7 +74,7 @@
                         Search results for keyword "{{ search_data }}" found in {{ count }} posts.
                     </div>
                     <div class="row">
-                        {% for article in myFilter.qs %}
+                        {% for article in articles %}
                             <article class="col-md-12 article-list">
                                 <div class="inner">
                                     <figure>
@@ -93,9 +93,7 @@
                                             {{ article.short_desc }}
                                         </p>
                                         <footer>
-                                            <a href="#" class="love"><i class="ion-android-favorite-outline"></i>
-                                                <div>{{ article.total_likes }}</div>
-                                            </a>
+                                           {% include 'rating/includes/inc_likes.html' %}
                                             <a class="btn btn-primary more" href={% url 'mainapp:article' article.pk %}>
                                                 <div>More</div>
                                                 <div><i class="ion-ios-arrow-thin-right"></i></div>

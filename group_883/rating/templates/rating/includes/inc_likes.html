@@ -1,0 +1,14 @@
+{% if user.is_authenticated %}
+<div class='likes'>
+    {% include 'rating/includes/inc_likes_js.html' %}
+</div>
+{% else %}
+
+<form action="{% url 'rating:like_article' article.pk %}" method="POST">
+    {% csrf_token %}
+    <button type="submit" class="love">
+        <i class="ion-android-favorite-outline"></i>
+        <div>{{ article.total_likes }}</div>
+    </button>
+</form>
+{% endif %}
