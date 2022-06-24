@@ -89,7 +89,7 @@ def article(request, pk):
     else:
         liked = False
 
-    comments = Comment.objects.filter(article__pk=article.pk)
+    comments = Comment.objects.filter(article__pk=article.pk, is_parent=True)
     new_comment = None
 
     if request.method == 'POST':
@@ -139,8 +139,6 @@ class CommentUpdateView(UpdateView):
 
 def comment_create(request, article_pk, pk):
 
-
-
     if request.method == 'POST':
         comment_form = CommentForm(data=request.POST)
         context = {
@@ -152,6 +150,7 @@ def comment_create(request, article_pk, pk):
             new_comment.article = Article.objects.get(pk=article_pk)
             new_comment.user = request.user
             new_comment.parent = Comment.objects.get(pk=pk)
+            new_comment.is_parent = False
             new_comment.save()
             return HttpResponseRedirect(reverse('mainapp:article', args=[new_comment.article.pk]))
     else:
@@ -160,20 +159,6 @@ def comment_create(request, article_pk, pk):
             'form': comment_form
         }
     return render(request, 'mainapp/comment_form.html', context)
-
-
-# class CommentCreateView(CreateView):
-#     model = Comment
-#     template_name = 'mainapp/comment_form.html'
-#     form_class = CommentForm
-#
-#     # def get_object(self, queryset=None):
-#     # comment = Comment.objects.get(pk=self.kwargs['pk'])
-#     # comment.user = self.request.user
-#     # comment.article.pk = self.kwargs.get('article_pk')
-#
-#     def get_success_url(self):
-#         return reverse('mainapp:article', args=[self.kwargs['article_pk']])
 
 
 class SearchResultsView(ListView):

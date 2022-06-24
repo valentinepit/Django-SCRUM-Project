@@ -53,6 +53,7 @@ class Comment(models.Model):
     updated_at = models.DateTimeField(verbose_name='Дата обновления', auto_now=True)
     is_active = models.BooleanField(default=True)
     parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
+    is_parent = models.BooleanField(default=True)
 
     class Meta:
         ordering = ['-updated_at']
@@ -62,12 +63,6 @@ class Comment(models.Model):
 
     def children(self):
         return Comment.objects.filter(parent=self)
-
-    @property
-    def is_parent(self):
-        if self.parent is not None:
-            return False
-        return True
 
 
 class Like(models.Model):
