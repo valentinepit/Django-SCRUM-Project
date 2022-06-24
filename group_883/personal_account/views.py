@@ -80,6 +80,7 @@ class UserDetail(DetailView):
 class ListArticle(ListView):
     model = Article
     template_name = 'personal_account/article_list.html'
+    paginate_by = 2
 
     def get_queryset(self):
         return Article.objects.filter(user=self.request.user).filter(is_active=True)
@@ -106,9 +107,11 @@ class EditArticle(UpdateView):
     def get_success_url(self):
         return reverse('personal_account:list_article')
 
-    def get_queryset(self):
-        if self.request.user:
-            return Article.objects.filter(is_active=True).filter(user=self.request.user)
+    def dispatch(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if obj.user != self.request.user:
+            return redirect('personal_account:list_article')
+        return super(EditArticle, self).dispatch(request, *args, **kwargs)
 
 
 class DeleteArticle(DeleteView):
@@ -117,6 +120,12 @@ class DeleteArticle(DeleteView):
 
     def get_success_url(self):
         return reverse('personal_account:list_article')
+
+    def dispatch(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if obj.user != self.request.user:
+            return redirect('personal_account:list_article')
+        return super(DeleteArticle, self).dispatch(request, *args, **kwargs)
 
 
 def password_change_done(request):

@@ -156,6 +156,7 @@ def comment_create(request, article_pk, pk):
 class SearchResultsView(ListView):
     model = Article
     template_name = 'search.html'
+    paginate_by = 2
 
     def get_context_data(self, **kwargs):
         context = super(SearchResultsView, self).get_context_data(**kwargs)

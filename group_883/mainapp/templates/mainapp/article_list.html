@@ -54,9 +54,11 @@
                 <div class="col-md-9">
                     <div class="nav-tabs-group">
                         <ul class="nav-tabs-list">
-                            <li {% if request.resolver_match.url_name == 'search_results' %} class="active"{% endif %}><a href="#">All</a></li>
+                            <li {% if request.resolver_match.url_name == 'search_results' %} class="active"{% endif %}>
+                                <a href="#">All</a></li>
                             <li><a href="#">Latest</a></li>
-                            <li {% if 'popular' in request.resolver_match.route %} class="active"{% endif %}><a href="{% url 'search:popular' %}">Popular</a></li>
+                            <li {% if 'popular' in request.resolver_match.route %} class="active"{% endif %}><a
+                                    href="{% url 'search:popular' %}">Popular</a></li>
                             <li><a href="#">Trending</a></li>
                             <li><a href="#">Videos</a></li>
                         </ul>
@@ -75,49 +77,53 @@
                     </div>
                     <div class="row">
                         {% for article in articles %}
-                            <article class="col-md-12 article-list">
-                                <div class="inner">
-                                    <figure>
-                                        <img src='/media/{{ article.image }}'>
-                                    </figure>
-                                    <div class="details">
-                                        <div class="detail">
-                                            <div class="category">
-                                                <a href="#">{{ article.tag }}</a>
+                            {% if article.is_active %}
+                                <article class="col-md-12 article-list">
+                                    <div class="inner">
+                                        <figure>
+                                            <img src='/media/{{ article.image }}'>
+                                        </figure>
+                                        <div class="details">
+                                            <div class="detail">
+                                                <div class="category">
+                                                    <a href="#">{{ article.tag }}</a>
+                                                </div>
+                                                <time>{{ article.created_at }}</time>
                                             </div>
-                                            <time>{{ article.created_at }}</time>
+                                            <h1><a href={% url 'mainapp:article' article.pk %}>{{ article.title }}</a>
+                                            </h1>
+                                            </h1>
+                                            <p>
+                                                {{ article.short_desc }}
+                                            </p>
+                                            <footer>
+                                                {% include 'rating/includes/inc_likes.html' %}
+                                                <a class="btn btn-primary more"
+                                                   href={% url 'mainapp:article' article.pk %}>
+                                                    <div>Далее</div>
+                                                    <div><i class="ion-ios-arrow-thin-right"></i></div>
+                                                </a>
+                                                {% if user.is_authenticated and user.pk == article.user.pk %}
+                                                    <ul>
+                                                        <a style="margin-top: 10px" class="btn btn-primary more"
+                                                           href="{% url 'personal_account:edit_article' article.pk %}">
+                                                            <div>Изменить</div>
+                                                            <div><i class="ion-ios-arrow-thin-right"></i></div>
+                                                        </a>
+                                                    </ul>
+                                                    <ul>
+                                                        <a class="btn btn-primary more"
+                                                           href="{% url 'personal_account:delete_article' article.pk %}">
+                                                            <div>Удалить</div>
+                                                            <div><i class="ion-ios-arrow-thin-right"></i></div>
+                                                        </a>
+                                                    </ul>
+                                                {% endif %}
+                                            </footer>
                                         </div>
-                                        <h1><a href={% url 'mainapp:article' article.pk %}>{{ article.title }}</a></h1>
-                                        </h1>
-                                        <p>
-                                            {{ article.short_desc }}
-                                        </p>
-                                        <footer>
-                                           {% include 'rating/includes/inc_likes.html' %}
-                                            <a class="btn btn-primary more" href={% url 'mainapp:article' article.pk %}>
-                                                <div>More</div>
-                                                <div><i class="ion-ios-arrow-thin-right"></i></div>
-                                            </a>
-                                            {% if user.is_authenticated %}
-                                                <ul>
-                                                    <a class="btn btn-primary more"
-                                                       href="{% url 'personal_account:edit_article' article.pk %}">
-                                                        <div>Изменить</div>
-                                                        <div><i class="ion-ios-arrow-thin-right"></i></div>
-                                                    </a>
-                                                </ul>
-                                                <ul>
-                                                    <a class="btn btn-primary more"
-                                                       href="{% url 'personal_account:delete_article' article.pk %}">
-                                                        <div>Удалить</div>
-                                                        <div><i class="ion-ios-arrow-thin-right"></i></div>
-                                                    </a>
-                                                </ul>
-                                            {% endif %}
-                                        </footer>
                                     </div>
-                                </div>
-                            </article>
+                                </article>
+                            {% endif %}
                         {% endfor %}
                         {% if is_paginated %}
                             <div class="col-md-12 text-center">
