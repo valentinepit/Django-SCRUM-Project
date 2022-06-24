@@ -23,10 +23,10 @@ urlpatterns = [
     path('', include('social_django.urls')),
     path('', include('mainapp.urls', namespace='mainapp')),
     path('search/', include('search.urls', namespace='search')),
+    path('like/', include('rating.urls', namespace='rating')),
     path('auth/', include('personal_account.urls', namespace='personal_account')),
     path('auth', include('personal_account.urls'), name='auth'),
 
-    path('search/', include('search.urls')),
 ]
 
 if settings.DEBUG:

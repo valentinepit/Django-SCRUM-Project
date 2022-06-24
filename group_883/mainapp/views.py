@@ -2,14 +2,13 @@ import requests
 from django.urls import reverse
 from django.utils import timezone
 from datetime import timedelta
-from django.http import JsonResponse, HttpResponseRedirect
-from django.template.loader import render_to_string
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 from mainapp.models import Article, Category, Tag, Comment
 from mainapp.forms import CommentForm
+from personal_account.models import User
 from django.views.generic import ListView, UpdateView, CreateView
 
 
@@ -20,6 +19,7 @@ def index(request):
     news = Article.objects.all()
     tags = Tag.objects.all()
     best_of_week = Article.objects.all()
+    best_authors = User.objects.order_by('-total_likes', '-id')[:5]
 
     context = {
         'title': 'Home',
@@ -28,7 +28,8 @@ def index(request):
         'read_now': read_now,
         'news': news,
         'tags': tags[:10],
-        'best_of_week': best_of_week
+        'best_of_week': best_of_week,
+        'best_authors': best_authors,
     }
     return render(request, 'mainapp/index.html', context)
 
@@ -82,12 +83,6 @@ def article(request, pk):
     newest_article = Article.objects.all().last()
     articles = Article.objects.all().order_by('-id')
     tags = Tag.objects.all()
-    total_likes = article.total_likes()
-
-    if article.likes.filter(id=request.user.id).exists():
-        liked = True
-    else:
-        liked = False
 
     comments = Comment.objects.filter(article__pk=article.pk, is_parent=True)
     new_comment = None
@@ -113,8 +108,6 @@ def article(request, pk):
         'tags': tags[:10],
         'commnets': comments,
         'new_comment': new_comment,
-        'total_likes': total_likes,
-        'liked': liked,
         'comment_form': comment_form,
     }
     return render(request, 'mainapp/article.html', context)
@@ -138,7 +131,6 @@ class CommentUpdateView(UpdateView):
 
 
 def comment_create(request, article_pk, pk):
-
     if request.method == 'POST':
         comment_form = CommentForm(data=request.POST)
         context = {
@@ -219,26 +211,3 @@ def help(request):
         'last_3_articles': articles[:3],
     }
     return render(request, 'mainapp/help.html', context)
-
-
-@login_required
-def like(request, pk):
-    if 'login' in request.META.get('HTTP_REFERER'):
-        return redirect('mainapp:article', pk=pk)
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        article = get_object_or_404(Article, id=pk)
-        if article.likes.filter(id=request.user.id).exists():
-            liked = False
-            article.likes.remove(request.user)
-        else:
-            liked = True
-            article.likes.add(request.user)
-
-        context = {
-            'article': article,
-            'total_likes': article.total_likes,
-            'liked': liked,
-        }
-
-        result = render_to_string('mainapp/includes/inc_likes.html', context)
-        return JsonResponse({'result': result})
