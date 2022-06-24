@@ -4,12 +4,11 @@ window.onload = function(){
         if (t_href.tagName != 'BUTTON'){
             t_href= t_href.parentElement;
             }
-
         $.ajax({
             url:'/like/' + t_href.value + '/',
 
             success: function(data){
-            $('.likes').html(data.result)
+            $('.likes').find('[value='+t_href.value+']').parent().html(data.result)
             }
         });
         return false;

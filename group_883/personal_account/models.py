@@ -8,6 +8,7 @@ class User(AbstractUser):
     is_admin = models.BooleanField(default=False)
     is_moder = models.BooleanField(default=False)
     birthday = models.DateField(verbose_name='День рождения', null=True)
+    total_likes = models.IntegerField(verbose_name='Кол-во лайков автора', default=0)
 
     def __str__(self):
         return self.first_name
