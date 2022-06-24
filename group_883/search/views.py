@@ -37,4 +37,4 @@ class PopularListView(SearchResultsView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['articles'] = context['articles'].annotate(count=Count('likes')).order_by('-count', '-id')
-        return context
+        return context_data
