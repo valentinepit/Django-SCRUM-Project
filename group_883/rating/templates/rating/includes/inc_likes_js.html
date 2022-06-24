@@ -1,0 +1,4 @@
+<button type="like" name="{{ article.pk }}" value="{{ article.pk }}" class="love love-transparent {% if user in article.likes.all %} active {% endif %}">
+    <i class="{% if user in article.likes.all %} ion-android-favorite {% else %} ion-android-favorite-outline {% endif %}"></i>
+    <div>{{ article.total_likes }}</div>
+</button>

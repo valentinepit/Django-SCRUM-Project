@@ -4141,5 +4141,9 @@ blockquote {
     margin-top:0px !important;
 }
 .main-help{
-padding-top:0px !important;
+    padding-top:0px !important;
+}
+.love-transparent{
+    background-color: transparent;
+    border: none;
 }

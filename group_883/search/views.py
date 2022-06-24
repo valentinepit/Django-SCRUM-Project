@@ -26,24 +26,15 @@ class SearchResultsView(ListView):
             'search_data': query,
             'count': len(Article.objects.filter(title__icontains=query)),
             'myFilter': my_filter,
+            'articles': my_filter.qs,
         })
         print('new')
         return context
 
 
-
 class PopularListView(SearchResultsView):
-    model = Article
 
     def get_context_data(self, **kwargs):
-        context = ListView.get_context_data(self, **kwargs)
-        query = ''
-        context.update({
-            'search_data': query,
-            'categories': Category.objects.order_by('title'),
-            'count': len(Article.objects.filter(title__icontains=query)),
-        })
+        context = super().get_context_data(**kwargs)
+        context['articles'] = context['articles'].annotate(count=Count('likes')).order_by('-count', '-id')
         return context
-
-    def get_queryset(self):
-        return super().get_queryset().annotate(count=Count('likes')).order_by('-count', '-id')
