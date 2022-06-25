@@ -2,7 +2,7 @@ from django.contrib.auth.views import PasswordChangeView, PasswordChangeDoneView
 from django.urls import path, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from personal_account.views import register, edit, login, logout, CreateArticle, EditArticle, ListArticle, \
-    DeleteArticle, password_change_done, UserDetail, user
+    DeleteArticle, password_change_done, UserDetail, user, verify
 
 app_name = 'personal_account'
 
@@ -21,5 +21,6 @@ urlpatterns = [
          PasswordChangeView.as_view(template_name='personal_account/password_change.html',
                                     success_url=reverse_lazy('personal_account:password_change_done')),
          name='password_change'),
-    path('password_change/done/', password_change_done, name='password_change_done')
+    path('password_change/done/', password_change_done, name='password_change_done'),
+    path('verify/<email>/<key>/', verify, name='verify')
 ]

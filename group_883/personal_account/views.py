@@ -1,10 +1,14 @@
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.contrib import auth
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, UpdateView, CreateView, DeleteView, DetailView
+from django.contrib.auth import login as log_user
 
+from group_883.settings import BASE_URL
 from personal_account.forms import UserLoginForm, UserRegisterForm, UserEditForm, CreateArticleForm
 from mainapp.models import Article
 from .models import User
@@ -42,9 +46,12 @@ def register(request):
     if request.method == 'POST':
         register_form = UserRegisterForm(request.POST, request.FILES)
         if register_form.is_valid():
-            register_form.save()
+            new_user = register_form.save()
+            send_verify_email(new_user)
+            # email = register_form.cleaned_data
             return HttpResponseRedirect(reverse('mainapp:index'))
     else:
+        print('asdasd')
         register_form = UserRegisterForm()
     context = {
         'register_form': register_form
@@ -131,3 +138,29 @@ class DeleteArticle(DeleteView):
 def password_change_done(request):
     logout(request)
     return redirect('personal_account:login')
+
+
+def verify(request, email, key):
+    user = User.objects.filter(email=email).first()
+    if user:
+        if user.activate_key == key and not user.as_activate_key_expired():
+            user.is_active = True
+            user.activate_key = None
+            user.activate_key_expired = None
+            user.save()
+            auth.login(request, user, backend='django.core.mail.backends.smtp.EmailBackend')
+    return render(request, 'personal_account/register_failed.html')
+
+
+def send_verify_email(user):
+    verify_link = reverse('personal_account:verify', args=[user.email, user.activate_key])
+    full_link = f'{BASE_URL}{verify_link}'
+
+    message = f'Перейдите по ссылке активации: {full_link}'
+    return send_mail(
+        'активация аккаунта',
+        message,
+        settings.EMAIL_HOST_USER,
+        [user.email],
+        fail_silently=False
+    )
