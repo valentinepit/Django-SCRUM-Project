@@ -4,6 +4,7 @@
 {% load crispy_forms_field %}
 {% load crispy_forms_filters %}
 {% load crispy_forms_utils %}
+{% load has_group %}
 
 {% block content %}
     <section class="single">
@@ -97,7 +98,8 @@
                                 <li><a>{{ article.category }}</a></li>
 
                                 <li>By <a
-                                        {% if user.pk == article.user.pk %}href="{% url 'personal_account:user'%}"{% else %}href="{% url 'personal_account:our_user' article.user.pk %}"{% endif %}>{{ article.user }}</a>
+                                        {% if user.pk == article.user.pk %}href="{% url 'personal_account:user' %}"
+                                        {% else %}href="{% url 'personal_account:our_user' article.user.pk %}"{% endif %}>{{ article.user }}</a>
                                 </li>
                             </ul>
                         </header>
@@ -110,23 +112,21 @@
 
                             <p>{{ article.body }}</p>
                         </div>
-                        {% if user.is_authenticated %}
-                            {% if user.pk == article.user.pk %}
-                                <ul>
-                                    <a class="btn btn-primary more"
-                                       href="{% url 'personal_account:edit_article' article.pk %}">
-                                        <div>Изменить</div>
-                                        <div><i class="ion-ios-arrow-thin-right"></i></div>
-                                    </a>
-                                </ul>
-                                <ul>
-                                    <a class="btn btn-primary more"
-                                       href="{% url 'personal_account:delete_article' article.pk %}">
-                                        <div>Удалить</div>
-                                        <div><i class="ion-ios-arrow-thin-right"></i></div>
-                                    </a>
-                                </ul>
-                            {% endif %}
+                        {% if user.is_authenticated and user.pk == article.user.pk or user|has_group:'admins' or user|has_group:'moderators' %}
+                            <ul>
+                                <a class="btn btn-primary more"
+                                   href="{% url 'personal_account:edit_article' article.pk %}">
+                                    <div>Изменить</div>
+                                    <div><i class="ion-ios-arrow-thin-right"></i></div>
+                                </a>
+                            </ul>
+                            <ul>
+                                <a class="btn btn-primary more"
+                                   href="{% url 'personal_account:delete_article' article.pk %}">
+                                    <div>Удалить</div>
+                                    <div><i class="ion-ios-arrow-thin-right"></i></div>
+                                </a>
+                            </ul>
                         {% endif %}
                         <footer class="d-flex">
                             <div class="col">
@@ -294,7 +294,10 @@
                                                     {% if comment.user == user %}
                                                         <a class="mx-5"
                                                            href="{% url 'mainapp:comment_update' comment.pk %}">Редактировать</a>
-                                                        <a href="{% url 'mainapp:comment_remove' comment.pk %}">Удалить</a>
+                                                    {% endif %}
+                                                    {% if comment.user == user  or user|has_group:'admins' or user|has_group:'moderators' %}
+                                                        <a style="margin-left: 10px"
+                                                           href="{% url 'mainapp:comment_remove' comment.pk %}">Удалить</a>
                                                     {% endif %}
                                                 </footer>
                                             {% endif %}
@@ -315,6 +318,8 @@
                                                             {% if reply.user == user %}
                                                                 <a class="mx-5"
                                                                    href="{% url 'mainapp:comment_update' reply.pk %}">Редактировать</a>
+                                                            {% endif %}
+                                                            {% if reply.user == user  or user|has_group:'admins' or user|has_group:'moderators' %}
                                                                 <a href="{% url 'mainapp:comment_remove' reply.pk %}">Удалить</a>
                                                             {% endif %}
                                                         </footer>

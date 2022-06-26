@@ -1,5 +1,6 @@
 {% extends 'mainapp/base.html' %}
 {% load static %}
+{% load has_group %}
 {% block content %}
     <body>
     <section class="search">
@@ -103,7 +104,7 @@
                                                     <div>Далее</div>
                                                     <div><i class="ion-ios-arrow-thin-right"></i></div>
                                                 </a>
-                                                {% if user.is_authenticated and user.pk == article.user.pk %}
+                                                {% if user.is_authenticated and user.pk == article.user.pk or user|has_group:'admins' or user|has_group:'moderators' %}
                                                     <ul>
                                                         <a style="margin-top: 10px" class="btn btn-primary more"
                                                            href="{% url 'personal_account:edit_article' article.pk %}">

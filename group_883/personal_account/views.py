@@ -82,6 +82,7 @@ def user(request):
 class UserDetail(DetailView):
     model = User
     template_name = 'personal_account/our_account.html'
+    context_object_name = 'current_user'
 
 
 class ListArticle(ListView):
@@ -114,25 +115,36 @@ class EditArticle(UpdateView):
     def get_success_url(self):
         return reverse('personal_account:list_article')
 
+    def has_permissions(self, user):
+        if user.groups.filter(name='admins') or user.groups.filter(name='moderators') or user.groups.filter(
+                name='test_group'):
+            return True
+
     def dispatch(self, request, *args, **kwargs):
         obj = self.get_object()
-        if obj.user != self.request.user:
+        if not self.has_permissions(self.request.user) and obj.user != self.request.user:
             return redirect('personal_account:list_article')
-        return super(EditArticle, self).dispatch(request, *args, **kwargs)
+        elif self.request.user.has_perm('mainapp.change_article') or obj.user == self.request.user:
+            return super(EditArticle, self).dispatch(request, *args, **kwargs)
 
 
 class DeleteArticle(DeleteView):
     model = Article
     template_name = 'personal_account/article_delete.html'
 
+    def has_permissions(self, user):
+        if user.groups.filter(name='admins') or user.groups.filter(name='moderators'):
+            return True
+
     def get_success_url(self):
         return reverse('personal_account:list_article')
 
     def dispatch(self, request, *args, **kwargs):
         obj = self.get_object()
-        if obj.user != self.request.user:
+        if not self.has_permissions(self.request.user) and obj.user != self.request.user:
             return redirect('personal_account:list_article')
-        return super(DeleteArticle, self).dispatch(request, *args, **kwargs)
+        elif self.request.user.has_perm('mainapp.delete_article') or obj.user == self.request.user:
+            return super(DeleteArticle, self).dispatch(request, *args, **kwargs)
 
 
 def password_change_done(request):
