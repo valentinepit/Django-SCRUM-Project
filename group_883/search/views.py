@@ -1,13 +1,9 @@
-from mainapp.models import Article
-from django.views.generic import ListView
 from .filters import ArticleFilter
 
-from django.shortcuts import render
 from django.views.generic import ListView
 from django.db.models import Count
 
-# from mainapp.views import SearchResultsView
-from mainapp.models import Article, Category
+from mainapp.models import Article
 
 
 class SearchResultsView(ListView):
@@ -28,7 +24,6 @@ class SearchResultsView(ListView):
             'myFilter': my_filter,
             'articles': my_filter.qs,
         })
-        print('new')
         return context
 
 

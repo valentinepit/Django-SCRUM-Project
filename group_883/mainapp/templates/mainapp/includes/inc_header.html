@@ -23,11 +23,9 @@
                     <div class="help-block">
                         <div>Популярно:</div>
                         <ul>
-                            <li><a href="#">HTML5</a></li>
-                            <li><a href="#">CSS3</a></li>
-                            <li><a href="#">Bootstrap 3</a></li>
-                            <li><a href="#">jQuery</a></li>
-                            <li><a href="#">AnguarJS</a></li>
+                            {% for tag in popular_tags %}
+                                <li><a href="{% url 'search:search_results' %}">{{tag.title}}</a> </li>
+                            {% endfor %}
                         </ul>
                     </div>
                 </form>
