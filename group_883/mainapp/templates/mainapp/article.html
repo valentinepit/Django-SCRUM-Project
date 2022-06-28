@@ -182,11 +182,11 @@
                     </div>
                     <div class="author">
                         <figure>
-                            <img src="{% static 'images/img01.jpg' %}">
+                            <img src="/media/{{ article.user.foto }}">
                         </figure>
                         <div class="details">
                             {#                        <div class="job">Web Developer</div>#}
-                            <h3 class="name">{{ article.user }}</h3>
+                            <h3 class="name"><a href={% url 'personal_account:our_user' article.user.pk%} class="name">{{ article.user }}</a></h3>
                             <p>{{ article.user.description }}</p>
                             <ul class="social trp sm">
                                 <li>

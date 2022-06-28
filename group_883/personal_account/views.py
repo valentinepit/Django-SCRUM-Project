@@ -1,12 +1,12 @@
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import Group
 from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.contrib import auth
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from django.views.generic import ListView, UpdateView, CreateView, DeleteView, DetailView
-from django.contrib.auth import login as log_user
 
 from group_883.settings import BASE_URL
 from personal_account.forms import UserLoginForm, UserRegisterForm, UserEditForm, CreateArticleForm
@@ -16,9 +16,7 @@ from .models import User
 
 def login(request):
     login_form = UserLoginForm(data=request.POST)
-
     next_param = request.GET.get('next', '')
-
     if request.method == 'POST' and login_form.is_valid():
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -48,10 +46,8 @@ def register(request):
         if register_form.is_valid():
             new_user = register_form.save()
             send_verify_email(new_user)
-            # email = register_form.cleaned_data
             return HttpResponseRedirect(reverse('mainapp:index'))
     else:
-        print('asdasd')
         register_form = UserRegisterForm()
     context = {
         'register_form': register_form
@@ -60,16 +56,20 @@ def register(request):
 
 
 @login_required()
-def edit(request):
+def edit(request, pk):
+    current_user = User.objects.get(pk=pk)
     if request.method == 'POST':
-        edit_form = UserEditForm(request.POST, request.FILES, instance=request.user)
-        if edit_form.is_valid():
+        edit_form = UserEditForm(request.POST, request.FILES, instance=current_user)
+        if (request.user.has_perm('personal_account.change_user') and request.user.groups.filter(
+                name='admins') and edit_form.is_valid() or (current_user == request.user and edit_form.is_valid())):
             edit_form.save()
-            return HttpResponseRedirect(reverse('personal_account:user'))
+            return redirect('personal_account:our_user', pk=current_user.pk)
     else:
-        edit_form = UserEditForm(instance=request.user)
+        edit_form = UserEditForm(instance=current_user)
     context = {
-        'edit_form': edit_form
+        'edit_form': edit_form,
+        'current_user': User.objects.get(pk=pk),
+
     }
     return render(request, 'personal_account/edit.html', context)
 
@@ -176,3 +176,27 @@ def send_verify_email(user):
         [user.email],
         fail_silently=False
     )
+
+
+def create_permissions(request, pk):
+    if request.user.groups.filter(name='admins') and request.user.has_perm('personal_account.change_user'):
+        current_user = User.objects.filter(pk=pk).first()
+        moders_group = Group.objects.filter(name='moderators').first()
+        current_user.groups.add(moders_group)
+    return render(request, 'personal_account/is_moder.html')
+
+
+def delete_permissions(request, pk):
+    if request.user.groups.filter(name='admins') and request.user.has_perm('personal_account.change_user'):
+        current_user = User.objects.filter(pk=pk).first()
+        moders_group = Group.objects.filter(name='moderators').first()
+        moders_group.user_set.remove(current_user)
+    return render(request, 'personal_account/delete_moder.html')
+
+
+def delete_user(request, pk):
+    user = User.objects.filter(pk=pk).first()
+    if request.user.has_perm('personal_account.delete_user') and request.user.groups.filter(name='admins'):
+        u = User.objects.get(username=user.username)
+        u.delete()
+    return render(request, 'personal_account/user_delete.html')

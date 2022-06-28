@@ -2,7 +2,7 @@ from django.contrib.auth.views import PasswordChangeView, PasswordChangeDoneView
 from django.urls import path, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from personal_account.views import register, edit, login, logout, CreateArticle, EditArticle, ListArticle, \
-    DeleteArticle, password_change_done, UserDetail, user, verify
+    DeleteArticle, password_change_done, UserDetail, user, verify, create_permissions, delete_permissions, delete_user
 
 app_name = 'personal_account'
 
@@ -10,7 +10,7 @@ urlpatterns = [
     path('login/', login, name='login'),
     path('logout/', logout, name='logout'),
     path('register/', register, name='register'),
-    path('edit/', edit, name='edit'),
+    path('edit/<int:pk>/', edit, name='edit'),
     path('our_user/<int:pk>/', UserDetail.as_view(), name='our_user'),
     path('user/', user, name='user'),
     path('list_article/', ListArticle.as_view(), name='list_article'),
@@ -22,5 +22,8 @@ urlpatterns = [
                                     success_url=reverse_lazy('personal_account:password_change_done')),
          name='password_change'),
     path('password_change/done/', password_change_done, name='password_change_done'),
-    path('verify/<email>/<key>/', verify, name='verify')
+    path('verify/<email>/<key>/', verify, name='verify'),
+    path('moder_perm/<int:pk>/', create_permissions, name='create_permissions'),
+    path('del_perm/<int:pk>/', delete_permissions, name='delete_permissions'),
+    path('del_user/<int:pk>/', delete_user, name='delete_user'),
 ]
