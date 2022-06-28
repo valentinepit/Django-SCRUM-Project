@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.utils import timezone
 from datetime import timedelta
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 from mainapp.models import Article, Category, Tag, Comment
@@ -75,6 +75,11 @@ def category(request, pk, page=1):
     return render(request, 'mainapp/category.html', context)
 
 
+def has_permissions(user):
+    if user.groups.filter(name='admins') or user.groups.filter(name='moderators'):
+        return True
+
+
 def article(request, pk):
     categories = Category.objects.all()
     tags = Tag.objects.all()
@@ -115,9 +120,11 @@ def article(request, pk):
 
 def comment_remove(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
-    comment.delete()
-    print(request.META.get('HTTP_REFERER'))
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    if not has_permissions(request.user) and request.user.pk != comment.user.pk:
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    elif request.user.has_perm('mainapp.delete_comment') or request.user.pk == comment.user.pk:
+        comment.delete()
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 class CommentUpdateView(UpdateView):
@@ -128,6 +135,18 @@ class CommentUpdateView(UpdateView):
     def get_success_url(self):
         comment = Comment.objects.get(pk=self.kwargs['pk'])
         return reverse('mainapp:article', args=[comment.article.pk])
+
+    def has_permissions(self, user):
+        if user.groups.filter(name='admins') or user.groups.filter(name='moderators'):
+            return True
+
+    def dispatch(self, request, *args, **kwargs):
+        obj = self.get_object()
+        comment = Comment.objects.get(pk=self.kwargs['pk'])
+        if not self.has_permissions(self.request.user) and obj.user != self.request.user:
+            return reverse('mainapp:article', args=[comment.article.pk])
+        elif self.request.user.has_perm('mainapp.delete_article') or obj.user == self.request.user:
+            return super(CommentUpdateView, self).dispatch(request, *args, **kwargs)
 
 
 def comment_create(request, article_pk, pk):
@@ -156,6 +175,7 @@ def comment_create(request, article_pk, pk):
 class SearchResultsView(ListView):
     model = Article
     template_name = 'search.html'
+    paginate_by = 2
 
     def get_context_data(self, **kwargs):
         context = super(SearchResultsView, self).get_context_data(**kwargs)

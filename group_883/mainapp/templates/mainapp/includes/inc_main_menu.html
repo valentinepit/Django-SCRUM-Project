@@ -29,7 +29,6 @@
                         <li><a href="#"><i class="icon ion-heart"></i> Favorite</a></li>
                         <li><a href="#"><i class="icon ion-chatbox"></i> Comments</a></li>
                         <li><a href="#"><i class="icon ion-key"></i> Change Password</a></li>
-                        <li><a href="{% url 'personal_account:edit' %}}"><i class="icon ion-settings"></i> Settings</a></li>
                         <li class="divider"></li>
                         {%if user.is_authenticated%}
                         <li><a href="{% url 'personal_account:logout' %}"><i class="icon ion-log-out"></i> Logout</a></li>

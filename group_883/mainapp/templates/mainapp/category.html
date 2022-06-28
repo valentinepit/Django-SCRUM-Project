@@ -1,6 +1,6 @@
 {% extends 'mainapp/base.html' %}
 {% load static %}
-
+{% load has_group %}
 {% block content %}
     <section class="category">
         <div class="container">
@@ -13,7 +13,7 @@
                                 <li class="active">{{ current_category.title }}</li>
                             </ol>
                             <h1 class="page-title">Категория: {{ current_category.title }}</h1>
-                            {% if current_category.pk == 0%}
+                            {% if current_category.pk == 0 %}
                                 <p class="page-subtitle">Все статьи</p>
                             {% else %}
                                 <p class="page-subtitle">Все статьи категории <i>{{ current_category.title }}</i></p>
@@ -23,47 +23,70 @@
                     <div class="line"></div>
                     <div class="row">
                         {% for article in category_articles %}
-                        <article class="col-md-12 article-list">
-                            <div class="inner">
-                                <figure>
-                                    <a href="{% url 'mainapp:article' article.pk %}">
-                                        <img src="/media/{{ article.image }}">
-                                    </a>
-                                </figure>
-                                <div class="details">
-                                    <div class="detail">
-                                        <div class="category">
-                                            <a href="{% url 'mainapp:category_page' article.category.pk 1 %}">{{ article.category }}</a>
-                                        </div>
-                                        <div class="time">{{ article.created_at|date:'d E Y'}}</div>
-                                    </div>
-                                    <h1><a href="{% url 'mainapp:article' article.pk %}">{{ article.title}}</a>
-                                    </h1>
-                                    <p>{{ article.short_desc }}</p>
-                                    <footer>
-                                        {% include 'rating/includes/inc_likes.html' %}
-                                        <a class="btn btn-primary more" href="{% url 'mainapp:article' article.pk %}">
-                                            <div>Далее</div>
-                                            <div><i class="ion-ios-arrow-thin-right"></i></div>
+                            <article class="col-md-12 article-list">
+                                <div class="inner">
+                                    <figure>
+                                        <a href="{% url 'mainapp:article' article.pk %}">
+                                            <img src="/media/{{ article.image }}">
                                         </a>
-                                    </footer>
+                                    </figure>
+                                    <div class="details">
+                                        <div class="detail">
+                                            <div class="category">
+                                                <a href="{% url 'mainapp:category_page' article.category.pk 1 %}">{{ article.category }}</a>
+                                            </div>
+                                            <div class="time">{{ article.created_at|date:'d E Y' }}</div>
+                                        </div>
+                                        <h1><a href="{% url 'mainapp:article' article.pk %}">{{ article.title }}</a>
+                                        </h1>
+                                        <p>{{ article.short_desc }}</p>
+                                        <footer>
+                                            {% include 'rating/includes/inc_likes.html' %}
+                                            <a class="btn btn-primary more"
+                                               href="{% url 'mainapp:article' article.pk %}">
+                                                <div>Далее</div>
+                                                <div><i class="ion-ios-arrow-thin-right"></i></div>
+                                            </a>
+                                            {% if user.is_authenticated and user.pk == article.user.pk or user|has_group:'admins' or user|has_group:'moderators' %}
+                                                <ul>
+                                                    <a style="margin-top: 10px" class="btn btn-primary more"
+                                                       href="{% url 'personal_account:edit_article' article.pk %}">
+                                                        <div>Изменить</div>
+                                                        <div><i class="ion-ios-arrow-thin-right"></i></div>
+                                                    </a>
+                                                </ul>
+                                                <ul>
+                                                    <a class="btn btn-primary more"
+                                                       href="{% url 'personal_account:delete_article' article.pk %}">
+                                                        <div>Удалить</div>
+                                                        <div><i class="ion-ios-arrow-thin-right"></i></div>
+                                                    </a>
+                                                </ul>
+                                            {% endif %}
+                                        </footer>
+                                    </div>
                                 </div>
-                            </div>
-                        </article>
+                            </article>
                         {% endfor %}
-                    {{ category_articles.num_pages }}
+                        {{ category_articles.num_pages }}
 
                         <div class="col-md-12 text-center">
                             <ul class="pagination">
                                 {% if category_articles.has_previous %}
-                                <li class="prev"><a href="{% url 'mainapp:category_page' current_category.pk category_articles.previous_page_number%}"><i class="ion-ios-arrow-left"></i></a></li>
+                                    <li class="prev"><a
+                                            href="{% url 'mainapp:category_page' current_category.pk category_articles.previous_page_number %}"><i
+                                            class="ion-ios-arrow-left"></i></a></li>
                                 {% endif %}
-                            {% for i in range %}
-                                <li {% if request.resolver_match.kwargs.page == i%}class="active"{% endif %}><a href="{% url 'mainapp:category_page' current_category.pk i %}">{{ i }}</a></li>
-                            {% endfor %}
-                            {% if category_articles.has_next %}
-                                <li class="next"><a href="{% url 'mainapp:category_page' current_category.pk category_articles.next_page_number %}"><i class="ion-ios-arrow-right"></i></a></li>
-                            {% endif %}
+                                {% for i in range %}
+                                    <li {% if request.resolver_match.kwargs.page == i %}class="active"{% endif %}><a
+                                            href="{% url 'mainapp:category_page' current_category.pk i %}">{{ i }}</a>
+                                    </li>
+                                {% endfor %}
+                                {% if category_articles.has_next %}
+                                    <li class="next"><a
+                                            href="{% url 'mainapp:category_page' current_category.pk category_articles.next_page_number %}"><i
+                                            class="ion-ios-arrow-right"></i></a></li>
+                                {% endif %}
                             </ul>
                             <div class="pagination-help-text">
                             </div>
@@ -93,33 +116,39 @@
                                         </a>
                                     </figure>
                                     <div class="details">
-                                        <h1><a href="{% url 'mainapp:article' newest_article.pk %}">{{ newest_article.title }}</a></h1>
+                                        <h1>
+                                            <a href="{% url 'mainapp:article' newest_article.pk %}">{{ newest_article.title }}</a>
+                                        </h1>
                                         <p>{{ newest_article.short_desc }}</p>
                                         <div class="detail">
-                                            <div class="time">{{ newest_article.created_at|date:'d E Y'}}</div>
-                                            <div class="category"><a href="{% url 'mainapp:category_page' newest_article.category.pk 1 %}">{{ newest_article.category }}</a></div>
+                                            <div class="time">{{ newest_article.created_at|date:'d E Y' }}</div>
+                                            <div class="category"><a
+                                                    href="{% url 'mainapp:category_page' newest_article.category.pk 1 %}">{{ newest_article.category }}</a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </article>
                             <div class="line"></div>
                             {% for item in last_3_articles %}
-                            <article class="article-mini">
-                                <div class="inner">
-                                    <figure>
-                                        <a href="{% url 'mainapp:article' item.pk %}">
-                                            <img src="/media/{{ item.image }}">
-                                        </a>
-                                    </figure>
-                                    <div class="padding">
-                                        <h1><a href="{% url 'mainapp:article' item.pk %}">{{ item.title }}</a></h1>
-                                        <div class="detail">
-                                            <div class="category"><a href="{% url 'mainapp:category_page' item.category.pk 0 %}">{{ item.category }}</a></div>
-                                            <div class="time">{{ item.created_at|date:'d E Y'}}</div>
+                                <article class="article-mini">
+                                    <div class="inner">
+                                        <figure>
+                                            <a href="{% url 'mainapp:article' item.pk %}">
+                                                <img src="/media/{{ item.image }}">
+                                            </a>
+                                        </figure>
+                                        <div class="padding">
+                                            <h1><a href="{% url 'mainapp:article' item.pk %}">{{ item.title }}</a></h1>
+                                            <div class="detail">
+                                                <div class="category"><a
+                                                        href="{% url 'mainapp:category_page' item.category.pk 0 %}">{{ item.category }}</a>
+                                                </div>
+                                                <div class="time">{{ item.created_at|date:'d E Y' }}</div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </article>
+                                </article>
                             {% endfor %}
                         </div>
                     </aside>
