@@ -34,7 +34,7 @@
                 <ul class="nav-icons">
                     {% if user.is_authenticated %}
                             <li><a href="{% url "personal_account:user"%}"><i class="ion-person"></i>
-                            <div>{{ user.first_name|default:'Пользователь' }}</div>
+                                <div>{{ user.first_name|default:'Пользователь' }}</div>
                         </a></li>
                         <li><a href="{% url 'personal_account:logout' %}"><i class="ion-person"></i>
                             <div>Logout</div>
