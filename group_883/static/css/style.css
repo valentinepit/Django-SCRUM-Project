@@ -4151,3 +4151,6 @@ blockquote {
     background-color: transparent;
     border: none;
 }
+.likes_comment{
+    float: right;
+}

@@ -287,6 +287,9 @@
                                             <h5 class="name">{{ comment.user.username }}</h5>
                                             <div class="time">{{ comment.created_at }}</div>
                                             <div class="description">{{ comment.body }}</div>
+                                            <div class="col">
+                                                {% include 'rating/includes/inc_likes_comment.html' %}
+                                            </div>
                                             {% if user.is_authenticated %}
                                                 <footer class="d-flex justify-content-start">
                                                     <a class="mr-5"
@@ -304,23 +307,26 @@
                                         </div>
                                     </div>
                                     <div class="reply-list">
-                                        {% for reply in comment.children %}
+                                        {% for comment in comment.children %}
                                             <div class="item" id="reply-box">
                                                 <div class="user">
                                                     <figure>
-                                                        <img src="/media/{{ reply.user.foto }}">
+                                                        <img src="/media/{{ comment.user.foto }}">
                                                     </figure>
                                                     <div class="details">
-                                                        <h5 class="name">{{ reply.user.username }}</h5>
-                                                        <div class="time">{{ reply.created_at }}</div>
-                                                        <div class="description">{{ reply.body }}</div>
+                                                        <h5 class="name">{{ comment.user.username }}</h5>
+                                                        <div class="time">{{ comment.created_at }}</div>
+                                                        <div class="description">{{ comment.body }}</div>
+                                                        <div class="col">
+                                                            {% include 'rating/includes/inc_likes_comment.html' %}
+                                                        </div>
                                                         <footer class="d-flex justify-content-start">
-                                                            {% if reply.user == user %}
+                                                            {% if comment.user == user %}
                                                                 <a class="mx-5"
-                                                                   href="{% url 'mainapp:comment_update' reply.pk %}">Редактировать</a>
+                                                                   href="{% url 'mainapp:comment_update' comment.pk %}">Редактировать</a>
                                                             {% endif %}
-                                                            {% if reply.user == user  or user|has_group:'admins' or user|has_group:'moderators' %}
-                                                                <a href="{% url 'mainapp:comment_remove' reply.pk %}">Удалить</a>
+                                                            {% if comment.user == user  or user|has_group:'admins' or user|has_group:'moderators' %}
+                                                                <a href="{% url 'mainapp:comment_remove' comment.pk %}">Удалить</a>
                                                             {% endif %}
                                                         </footer>
                                                     </div>

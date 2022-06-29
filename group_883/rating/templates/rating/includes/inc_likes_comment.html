@@ -1,15 +1,15 @@
-<div class='likes'>
+<div class='likes likes_comment'>
 {% if user.is_authenticated %}
 
-    {% include 'rating/includes/inc_likes_js.html' %}
+    {% include 'rating/includes/inc_likes_js_comment.html' %}
 
 {% else %}
 
-<form action="{% url 'rating:like_article' article.pk %}" method="POST">
+<form action="{% url 'rating:like_comment' comment.pk %}" method="POST">
     {% csrf_token %}
     <button type="submit" class="love love-transparent">
         <i class="ion-android-favorite-outline"></i>
-        <div>{{ article.total_likes }}</div>
+        <div>{{ comment.total_likes }}</div>
     </button>
 </form>
 {% endif %}
