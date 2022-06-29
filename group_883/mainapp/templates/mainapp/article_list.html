@@ -26,7 +26,7 @@
                     <div class="nav-tabs-group">
                         <ul class="nav-tabs-list">
                             <li {% if request.resolver_match.url_name == 'search_results' %} class="active"{% endif %}>
-                                <a href="#">All</a></li>
+                                <a href="{% url 'search:search_results' %}">All</a></li>
                             <li><a href="#">Latest</a></li>
                             <li {% if 'popular' in request.resolver_match.route %} class="active"{% endif %}><a
                                     href="{% url 'search:popular' %}">Popular</a></li>

@@ -1,4 +1,7 @@
+from typing import Dict, List
+
 import requests
+from django.db.models import Count
 from django.urls import reverse
 from django.utils import timezone
 from datetime import timedelta
@@ -20,7 +23,7 @@ def index(request):
     tags = Tag.objects.all()
     best_of_week = Article.objects.all()
     best_authors = User.objects.order_by('-total_likes', '-id')[:5]
-    popular_tags = tags[:5]
+    popular_tags = get_popular_tags(articles)
     context = {
         'title': 'Home',
         'categories': categories,
@@ -33,6 +36,13 @@ def index(request):
         'popular_tags': popular_tags,
     }
     return render(request, 'mainapp/index.html', context)
+
+
+def get_popular_tags(_articles) -> List:
+    popular_articles = _articles.annotate(count=Count('likes')).order_by('-count', '-id')
+    tags = {_article.tag.title: _article.title for _article in popular_articles}
+    popular_tags = [tag for tag in tags]
+    return popular_tags
 
 
 def category(request, pk, page=1):
