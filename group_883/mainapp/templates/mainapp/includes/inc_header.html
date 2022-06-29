@@ -24,7 +24,7 @@
                         <div>Популярно:</div>
                         <ul>
                             {% for tag in popular_tags %}
-                                <li><a href="{% url 'search:search_results' %}">{{tag.title}}</a> </li>
+                                <li><a href="{% url 'search:search_by_tag' 2 %}">{{tag.title}}</a> </li>
                             {% endfor %}
                         </ul>
                     </div>

@@ -7,4 +7,5 @@ urlpatterns = [
     path('popular/', search.PopularListView.as_view(), name='popular'),
 
     path('', search.SearchResultsView.as_view(), name='search_results'),
+    path('tags/<int:pk>', search.SearchByTagView.as_view(), name='search_by_tag'),
 ]

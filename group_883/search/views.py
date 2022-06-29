@@ -11,9 +11,41 @@ class SearchResultsView(ListView):
     model = Article
     template_name = 'search.html'
     paginate_by = 2
+    filter_set_class = ArticleFilter
 
     def get_context_data(self, **kwargs):
         context = super(SearchResultsView, self).get_context_data(**kwargs)
+        query = self.request.GET.get('q')
+        if not query:
+            query = ""
+        articles = Article.objects.filter(title__icontains=query).filter(is_active=True)
+        my_filter = self.filter_set_class(self.request.GET, queryset=articles)
+        filter_data = my_filter.qs
+        context.update({
+            'search_data': query,
+            'count': len(Article.objects.filter(title__icontains=query)),
+            'myFilter': my_filter,
+            'articles': filter_data,
+            'popular_tags': get_popular_tags(Article.objects.filter(is_active=True)),
+        })
+        return context
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return ArticleFilter(self.request.GET, queryset=queryset).qs
+
+    def get_filterset_kwargs(self, filter_set_class):
+        kwargs = super(SearchResultsView, self).get_filterset_kwargs(filter_set_class)
+        kwargs['attribute'] = 'width'
+        return kwargs
+
+
+class SearchByTagView(ListView):
+    model = Article
+    template_name = 'search.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(SearchByTag, self).get_context_data(**kwargs)
         query = self.request.GET.get('q')
         if not query:
             query = ""
