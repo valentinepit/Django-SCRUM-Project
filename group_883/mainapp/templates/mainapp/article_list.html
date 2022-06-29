@@ -47,7 +47,7 @@
                         Search results for keyword "{{ search_data }}" found in {{ count }} posts.
                     </div>
                     <div class="row">
-                        {% for article in articles %}
+                        {% for article in object_list %}
                             {% if article.is_active %}
                                 <article class="col-md-12 article-list">
                                     <div class="inner">
