@@ -54,6 +54,7 @@ class Comment(models.Model):
     is_active = models.BooleanField(default=True)
     parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
     is_parent = models.BooleanField(default=True)
+    likes = models.ManyToManyField(User, related_name='liked_comments')
 
     class Meta:
         ordering = ['-updated_at']
@@ -63,6 +64,9 @@ class Comment(models.Model):
 
     def children(self):
         return Comment.objects.filter(parent=self)
+
+    def total_likes(self):
+        return self.likes.count()
 
 
 class Like(models.Model):

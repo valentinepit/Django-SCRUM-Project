@@ -94,6 +94,8 @@ def article(request, pk):
             new_comment.article = article
             new_comment.user = request.user
             new_comment.save()
+            if new_comment.body.startswith('@moderator'):
+                print("Модератора сюда")  # Нужны уведомления
     else:
         comment_form = CommentForm()
 
