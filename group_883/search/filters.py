@@ -3,8 +3,6 @@ from django import forms
 
 from mainapp.models import *
 
-from mainapp.models import Tag
-
 
 class ArticleFilter(django_filters.FilterSet):
     tag = django_filters.ModelMultipleChoiceFilter(queryset=Tag.objects.all(),
@@ -15,7 +13,6 @@ class ArticleFilter(django_filters.FilterSet):
         fields = {
             'category': ['exact'],
             'user': ['exact'],
-            # 'tag': ['exact'],
             'created_at': ['lt', 'gt'],
         }
         filter_overrides = {

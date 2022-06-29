@@ -45,7 +45,7 @@ class SearchByTagView(ListView):
     template_name = 'search.html'
 
     def get_context_data(self, **kwargs):
-        context = super(SearchByTag, self).get_context_data(**kwargs)
+        context = super(SearchByTagView, self).get_context_data(**kwargs)
         query = self.request.GET.get('q')
         if not query:
             query = ""
