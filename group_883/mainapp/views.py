@@ -165,6 +165,8 @@ def comment_create(request, article_pk, pk):
             new_comment.parent = Comment.objects.get(pk=pk)
             new_comment.is_parent = False
             new_comment.save()
+            if new_comment.body.startswith('@moderator'):
+                print("Модератора сюда")  # Нужны уведомления
             return HttpResponseRedirect(reverse('mainapp:article', args=[new_comment.article.pk]))
     else:
         comment_form = CommentForm()
