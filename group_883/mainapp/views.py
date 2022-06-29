@@ -1,18 +1,12 @@
-from typing import Dict, List
-
-import requests
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Count
-from django.urls import reverse
-from django.utils import timezone
-from datetime import timedelta
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-
-from mainapp.models import Article, Category, Tag, Comment
+from django.urls import reverse
+from django.views.generic import UpdateView
 from mainapp.forms import CommentForm
+from mainapp.models import Article, Category, Tag, Comment
 from personal_account.models import User
-from django.views.generic import ListView, UpdateView, CreateView
 
 
 def index(request):
@@ -38,11 +32,13 @@ def index(request):
     return render(request, 'mainapp/index.html', context)
 
 
-def get_popular_tags(_articles) -> List:
-    popular_articles = _articles.annotate(count=Count('likes')).order_by('-count', '-id')
-    tags = {_article.tag.title: _article.title for _article in popular_articles}
-    popular_tags = [tag for tag in tags]
-    return popular_tags
+def get_popular_tags(_articles):
+    popular_articles = _articles.annotate(count=Count('likes')).order_by('-count', '-id').values('tag', 'tag__title')
+    popular_tags = popular_articles.order_by('tag__title').distinct()
+    tags = {}
+    for item in popular_tags:
+        tags[item["tag"]] = item["tag__title"]
+    return tags
 
 
 def category(request, pk, page=1):

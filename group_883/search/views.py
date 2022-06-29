@@ -1,4 +1,5 @@
 from .filters import ArticleFilter
+from django.template.defaulttags import register
 
 from django.views.generic import ListView
 from django.db.models import Count
@@ -21,12 +22,13 @@ class SearchResultsView(ListView):
         articles = Article.objects.filter(title__icontains=query).filter(is_active=True)
         my_filter = self.filter_set_class(self.request.GET, queryset=articles)
         filter_data = my_filter.qs
+        popular_tags = get_popular_tags(Article.objects.all())
         context.update({
             'search_data': query,
             'count': len(Article.objects.filter(title__icontains=query)),
             'myFilter': my_filter,
             'articles': filter_data,
-            'popular_tags': get_popular_tags(Article.objects.filter(is_active=True)),
+            'popular_tags': popular_tags,
         })
         return context
 
@@ -39,31 +41,16 @@ class SearchResultsView(ListView):
         kwargs['attribute'] = 'width'
         return kwargs
 
+    @register.filter
+    def get_item(self, dictionary, key):
+        return dictionary.get(key)
 
-class SearchByTagView(ListView):
-    model = Article
-    template_name = 'search.html'
 
-    def get_context_data(self, **kwargs):
-        context = super(SearchByTagView, self).get_context_data(**kwargs)
-        query = self.request.GET.get('q')
-        if not query:
-            query = ""
-        articles = Article.objects.filter(title__icontains=query).filter(is_active=True)
-        my_filter = ArticleFilter(self.request.GET, queryset=articles)
-        filter_data = my_filter.qs
-        context.update({
-            'search_data': query,
-            'count': len(Article.objects.filter(title__icontains=query)),
-            'myFilter': my_filter,
-            'articles': filter_data,
-            'popular_tags': get_popular_tags(Article.objects.filter(is_active=True)),
-        })
-        return context
+class SearchByTagView(SearchResultsView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        return ArticleFilter(self.request.GET, queryset=queryset).qs
+        return ArticleFilter(self.request.GET, queryset=queryset).qs.filter(tag=self.kwargs['pk'])
 
 
 class PopularListView(SearchResultsView):
