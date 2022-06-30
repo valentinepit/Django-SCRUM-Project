@@ -1114,6 +1114,10 @@ section.search .search-result {
   font-size: 14px;
   font-weight: 400;
 }
+.form-group p {
+  display:flex;
+  flex-direction: column;
+}
 .form-group label.fw {
   display: block;
 }

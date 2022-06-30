@@ -1,15 +1,13 @@
-import requests
-from django.urls import reverse
-from django.utils import timezone
-from datetime import timedelta
-from django.http import HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-
-from mainapp.models import Article, Category, Tag, Comment
+from django.db.models import Count
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404
+from django.urls import reverse
+from django.views.generic import UpdateView
 from mainapp.forms import CommentForm
+from mainapp.models import Article, Category, Tag, Comment
 from personal_account.models import User
-from django.views.generic import ListView, UpdateView, CreateView
 
 
 def index(request):
@@ -20,7 +18,7 @@ def index(request):
     tags = Tag.objects.all()
     best_of_week = Article.objects.all()
     best_authors = User.objects.order_by('-total_likes', '-id')[:5]
-
+    popular_tags = get_popular_tags(articles)
     context = {
         'title': 'Home',
         'categories': categories,
@@ -30,8 +28,18 @@ def index(request):
         'tags': tags[:10],
         'best_of_week': best_of_week,
         'best_authors': best_authors,
+        'popular_tags': popular_tags,
     }
     return render(request, 'mainapp/index.html', context)
+
+
+def get_popular_tags(_articles):
+    popular_articles = _articles.annotate(count=Count('likes')).order_by('-count', '-id').values('tag', 'tag__title')
+    popular_tags = popular_articles.order_by('tag__title').distinct()
+    tags = {}
+    for item in popular_tags:
+        tags[item["tag"]] = item["tag__title"]
+    return tags
 
 
 def category(request, pk, page=1):
@@ -75,11 +83,6 @@ def category(request, pk, page=1):
     return render(request, 'mainapp/category.html', context)
 
 
-def has_permissions(user):
-    if user.groups.filter(name='admins') or user.groups.filter(name='moderators'):
-        return True
-
-
 def article(request, pk):
     categories = Category.objects.all()
     tags = Tag.objects.all()
@@ -120,13 +123,12 @@ def article(request, pk):
     return render(request, 'mainapp/article.html', context)
 
 
+@login_required
 def comment_remove(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
-    if not has_permissions(request.user) and request.user.pk != comment.user.pk:
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-    elif request.user.has_perm('mainapp.delete_comment') or request.user.pk == comment.user.pk:
-        comment.delete()
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    comment.delete()
+    print(request.META.get('HTTP_REFERER'))
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 class CommentUpdateView(UpdateView):
@@ -138,19 +140,8 @@ class CommentUpdateView(UpdateView):
         comment = Comment.objects.get(pk=self.kwargs['pk'])
         return reverse('mainapp:article', args=[comment.article.pk])
 
-    def has_permissions(self, user):
-        if user.groups.filter(name='admins') or user.groups.filter(name='moderators'):
-            return True
 
-    def dispatch(self, request, *args, **kwargs):
-        obj = self.get_object()
-        comment = Comment.objects.get(pk=self.kwargs['pk'])
-        if not self.has_permissions(self.request.user) and obj.user != self.request.user:
-            return reverse('mainapp:article', args=[comment.article.pk])
-        elif self.request.user.has_perm('mainapp.delete_article') or obj.user == self.request.user:
-            return super(CommentUpdateView, self).dispatch(request, *args, **kwargs)
-
-
+@login_required
 def comment_create(request, article_pk, pk):
     if request.method == 'POST':
         comment_form = CommentForm(data=request.POST)
@@ -176,52 +167,92 @@ def comment_create(request, article_pk, pk):
     return render(request, 'mainapp/comment_form.html', context)
 
 
-class SearchResultsView(ListView):
-    model = Article
-    template_name = 'search.html'
-    paginate_by = 2
+@login_required
+def moderation_list(request):
+    categories = Category.objects.all()
+    articles_to_moderate = Article.objects.filter(moderated=0)
+    context = {
+        'categories': categories,
+        'articles_to_moderate': articles_to_moderate
 
-    def get_context_data(self, **kwargs):
-        context = super(SearchResultsView, self).get_context_data(**kwargs)
-        query = self.request.GET.get('q')
-        context.update({
-            'search_data': query,
-            'categories': Category.objects.order_by('title'),
-            'count': len(Article.objects.filter(title__icontains=query)),
-        })
-        return context
+    }
+    return render(request, 'mainapp/moderation_list.html', context)
 
-    def get_queryset(self):
-        query = None
-        if self.request.method == "GET":
-            query = self.request.GET.get('q')
-        if not query:
-            query = ""
-        category_filter = self.category_filter()
-        date_filter = self.date_filter(category_filter)
-        result = date_filter.filter(title__icontains=query)
-        return result
 
-    def category_filter(self):
-        cat_filter = self.request.GET.getlist('category') if self.request.GET.getlist('category') else "on"
-        if "on" not in cat_filter:
-            return Article.objects.filter(category__title__in=cat_filter)
-        return Article.objects.all()
+@login_required
+def article_to_moderate(request, pk):
+    categories = Category.objects.all()
+    article = get_object_or_404(Article, pk=pk)
+    context = {
+        'categories': categories,
+        'article': article
+    }
+    return render(request, 'mainapp/article_to_moderate.html', context)
 
-    def date_filter(self, _query):
-        date_filter = "Anytime" if not self.request.GET.get('date') else self.request.GET.get('date')
-        today = timezone.now()
-        days_gap = 0
-        if "Anytime" == date_filter:
-            return _query.all()
-        if date_filter == 'Today':
-            days_gap = 1
-        elif date_filter == 'Last Week':
-            days_gap = 7
-        elif date_filter == 'Last Month':
-            days_gap = 30
-        date_range = today - timedelta(days=days_gap)
-        return _query.filter(created_at__gte=date_range)
+
+@login_required
+def accept_article(request, pk):
+    article = get_object_or_404(Article, pk=pk)
+    article.moderated = 1
+    article.save()
+
+    return HttpResponseRedirect(reverse('mainapp:moderation_list'))
+
+
+@login_required
+def reject_article(request, pk):
+    article = get_object_or_404(Article, pk=pk)
+    article.moderated = 2
+    article.save()
+
+    return HttpResponseRedirect(reverse('mainapp:moderation_list'))
+
+
+# class SearchResultsView(ListView):
+#     model = Article
+#     template_name = 'search.html'
+#
+#     def get_context_data(self, **kwargs):
+#         context = super(SearchResultsView, self).get_context_data(**kwargs)
+#         query = self.request.GET.get('q')
+#         context.update({
+#             'search_data': query,
+#             'categories': Category.objects.order_by('title'),
+#             'count': len(Article.objects.filter(title__icontains=query)),
+#         })
+#         return context
+#
+#     def get_queryset(self):
+#         query = None
+#         if self.request.method == "GET":
+#             query = self.request.GET.get('q')
+#         if not query:
+#             query = ""
+#         category_filter = self.category_filter()
+#         date_filter = self.date_filter(category_filter)
+#         result = date_filter.filter(title__icontains=query)
+#         return result
+#
+#     def category_filter(self):
+#         cat_filter = self.request.GET.getlist('category') if self.request.GET.getlist('category') else "on"
+#         if "on" not in cat_filter:
+#             return Article.objects.filter(category__title__in=cat_filter)
+#         return Article.objects.all()
+#
+#     def date_filter(self, _query):
+#         date_filter = "Anytime" if not self.request.GET.get('date') else self.request.GET.get('date')
+#         today = timezone.now()
+#         days_gap = 0
+#         if "Anytime" == date_filter:
+#             return _query.all()
+#         if date_filter == 'Today':
+#             days_gap = 1
+#         elif date_filter == 'Last Week':
+#             days_gap = 7
+#         elif date_filter == 'Last Month':
+#             days_gap = 30
+#         date_range = today - timedelta(days=days_gap)
+#         return _query.filter(created_at__gte=date_range)
 
 
 def help(request):
