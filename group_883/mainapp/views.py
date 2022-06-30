@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Count
 from django.http import HttpResponseRedirect
@@ -122,6 +123,7 @@ def article(request, pk):
     return render(request, 'mainapp/article.html', context)
 
 
+@login_required
 def comment_remove(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
     comment.delete()
@@ -139,6 +141,7 @@ class CommentUpdateView(UpdateView):
         return reverse('mainapp:article', args=[comment.article.pk])
 
 
+@login_required
 def comment_create(request, article_pk, pk):
     if request.method == 'POST':
         comment_form = CommentForm(data=request.POST)
@@ -162,6 +165,47 @@ def comment_create(request, article_pk, pk):
             'form': comment_form
         }
     return render(request, 'mainapp/comment_form.html', context)
+
+
+@login_required
+def moderation_list(request):
+    categories = Category.objects.all()
+    articles_to_moderate = Article.objects.filter(moderated=0)
+    context = {
+        'categories': categories,
+        'articles_to_moderate': articles_to_moderate
+
+    }
+    return render(request, 'mainapp/moderation_list.html', context)
+
+
+@login_required
+def article_to_moderate(request, pk):
+    categories = Category.objects.all()
+    article = get_object_or_404(Article, pk=pk)
+    context = {
+        'categories': categories,
+        'article': article
+    }
+    return render(request, 'mainapp/article_to_moderate.html', context)
+
+
+@login_required
+def accept_article(request, pk):
+    article = get_object_or_404(Article, pk=pk)
+    article.moderated = 1
+    article.save()
+
+    return HttpResponseRedirect(reverse('mainapp:moderation_list'))
+
+
+@login_required
+def reject_article(request, pk):
+    article = get_object_or_404(Article, pk=pk)
+    article.moderated = 2
+    article.save()
+
+    return HttpResponseRedirect(reverse('mainapp:moderation_list'))
 
 
 # class SearchResultsView(ListView):

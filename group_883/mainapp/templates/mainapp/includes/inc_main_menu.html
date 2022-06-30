@@ -1,4 +1,5 @@
 {% load static %}
+{% load has_group %}
 
 <nav class="menu">
     <div class="container">
@@ -26,6 +27,11 @@
                         class="ion-ios-arrow-right"></i></a>
                     <ul class="dropdown-menu">
                         <li><a href="{% url 'personal_account:user'%}"><i class="icon ion-person"></i> My Account</a></li>
+
+                        {% if user|has_group:'admins' or user|has_group:'moderators' %}
+                            <li><a href="{% url 'mainapp:moderation_list'%}"><i class="icon ion-checkmark"></i> Moderator</a></li>
+                        {% endif %}
+
                         <li><a href="#"><i class="icon ion-heart"></i> Favorite</a></li>
                         <li><a href="#"><i class="icon ion-chatbox"></i> Comments</a></li>
                         <li><a href="#"><i class="icon ion-key"></i> Change Password</a></li>

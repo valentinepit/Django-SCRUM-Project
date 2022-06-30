@@ -30,6 +30,8 @@ class Article(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     is_active = models.BooleanField(default=True)
     likes = models.ManyToManyField(User, related_name='liked_articles')
+    # статусы: 0 - модератор не проверял, 1 - модератор проверил и одобрил, 2 - модератор проверил и отклонил
+    moderated = models.SmallIntegerField(default=0, verbose_name='Статус модерации')
 
     def total_likes(self):
         return self.likes.count()
