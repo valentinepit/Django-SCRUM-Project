@@ -1,4 +1,7 @@
 {% load static %}
+{% load show_notifications %}
+<script src="{% static 'js/notification.js' %}"></script>
+
 
 <div class="firstbar">
     <div class="container">
@@ -35,6 +38,7 @@
             <div class="col-md-3 col-sm-12 text-right">
                 <ul class="nav-icons">
                     {% if user.is_authenticated %}
+                    {% show_notifications %}
                             <li><a href="{% url "personal_account:user"%}"><i class="ion-person"></i>
                                 <div>{{ user.first_name|default:'Пользователь' }}</div>
                         </a></li>

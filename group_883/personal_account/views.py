@@ -2,16 +2,16 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from django.core.mail import send_mail
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib import auth
 from django.urls import reverse
-from django.views.generic import ListView, UpdateView, CreateView, DeleteView, DetailView
+from django.views.generic import ListView, UpdateView, CreateView, DeleteView, DetailView, View
 
 from group_883.settings import BASE_URL
 from personal_account.forms import UserLoginForm, UserRegisterForm, UserEditForm, CreateArticleForm
 from mainapp.models import Article
-from .models import User
+from .models import User, Notification
 
 
 def login(request):
@@ -200,3 +200,35 @@ def delete_user(request, pk):
         u = User.objects.get(username=user.username)
         u.delete()
     return render(request, 'personal_account/user_delete.html')
+
+
+class PostNotification(View):
+    def get(self, request, notification_pk, article_pk, *args, **kwargs):
+        notification = Notification.objects.get(pk=notification_pk)
+        #article = Article.objects.get(pk=article_pk)
+
+        notification.user_has_seen = True
+        notification.save()
+
+        return redirect('mainapp:article', pk=article_pk)
+
+
+class FollowNotification(View):
+    def get(self, request, notification_pk, profile_pk, *args, **kwargs):
+        notification = Notification.objects.get(pk=notification_pk)
+        profile = User.objects.get(pk=profile_pk)
+
+        notification.user_has_seen = True
+        notification.save()
+
+        return redirect('profile', pk=profile_pk)
+
+
+class RemoveNotification(View):
+    def delete(self, request, notification_pk, *args, **kwargs):
+        notification = Notification.objects.get(pk=notification_pk)
+
+        notification.user_has_seen = True
+        notification.save()
+
+        return HttpResponse('Success', content_type='text/plain')
