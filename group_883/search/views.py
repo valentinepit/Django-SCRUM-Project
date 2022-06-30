@@ -1,35 +1,56 @@
-from mainapp.models import Article
-from django.views.generic import ListView
 from .filters import ArticleFilter
+from django.template.defaulttags import register
 
-from django.shortcuts import render
 from django.views.generic import ListView
 from django.db.models import Count
 
-# from mainapp.views import SearchResultsView
-from mainapp.models import Article, Category
+from mainapp.models import Article, Tag
+from mainapp.views import get_popular_tags
 
 
 class SearchResultsView(ListView):
     model = Article
     template_name = 'search.html'
     paginate_by = 2
+    filter_set_class = ArticleFilter
 
     def get_context_data(self, **kwargs):
         context = super(SearchResultsView, self).get_context_data(**kwargs)
         query = self.request.GET.get('q')
         if not query:
             query = ""
-        articles = Article.objects.filter(title__icontains=query)
-        my_filter = ArticleFilter(self.request.GET, queryset=articles)
+        articles = Article.objects.filter(title__icontains=query).filter(is_active=True)
+        my_filter = self.filter_set_class(self.request.GET, queryset=articles)
+        filter_data = my_filter.qs
+        popular_tags = get_popular_tags(Article.objects.all())
         context.update({
             'search_data': query,
             'count': len(Article.objects.filter(title__icontains=query)),
             'myFilter': my_filter,
-            'articles': my_filter.qs,
+            'articles': filter_data,
+            'popular_tags': popular_tags,
         })
-        print('new')
         return context
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return ArticleFilter(self.request.GET, queryset=queryset).qs
+
+    def get_filterset_kwargs(self, filter_set_class):
+        kwargs = super(SearchResultsView, self).get_filterset_kwargs(filter_set_class)
+        kwargs['attribute'] = 'width'
+        return kwargs
+
+    @register.filter
+    def get_item(self, dictionary, key):
+        return dictionary.get(key)
+
+
+class SearchByTagView(SearchResultsView):
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return ArticleFilter(self.request.GET, queryset=queryset).qs.filter(tag=self.kwargs['pk'])
 
 
 class PopularListView(SearchResultsView):

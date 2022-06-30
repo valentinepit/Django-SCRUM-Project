@@ -1,15 +1,18 @@
 import django_filters
+from django import forms
 
 from mainapp.models import *
 
 
 class ArticleFilter(django_filters.FilterSet):
+    tag = django_filters.ModelMultipleChoiceFilter(queryset=Tag.objects.all(),
+                                                    widget=forms.CheckboxSelectMultiple)
+
     class Meta:
         model = Article
         fields = {
             'category': ['exact'],
             'user': ['exact'],
-            'tag': ['exact'],
             'created_at': ['lt', 'gt'],
         }
         filter_overrides = {
