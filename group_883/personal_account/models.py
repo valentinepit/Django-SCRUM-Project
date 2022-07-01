@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 
 import pytz
+
+from django.utils import timezone
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractUser
@@ -17,11 +19,33 @@ class User(AbstractUser):
     activate_key = models.CharField(max_length=128, verbose_name='Ключ активации', blank=True, null=True)
     activate_key_expired = models.DateTimeField(blank=True, null=True)
 
-
     def __str__(self):
-        return self.first_name
+        return self.first_name if self.first_name else self.username
 
     def as_activate_key_expired(self):
         if datetime.now(pytz.timezone(settings.TIME_ZONE)) > self.activate_key_expired + timedelta(hours=48):
             return True
         return False
+
+
+class Notification(models.Model):
+    # 0 = @moderator, 1 = Like, 2 = Comment
+    AT_MODERATOR = 0
+    LIKE = 1
+    COMMENT = 2
+
+    NOTE = (
+        (AT_MODERATOR, '@moderator'),
+        (LIKE, 'Like'),
+        (COMMENT, 'Comment'),
+    )
+    notification_type = models.IntegerField(choices=NOTE, verbose_name='Тип')
+    to_user = models.ForeignKey(User, related_name='notification_to', on_delete=models.CASCADE, null=True)
+    from_user = models.ForeignKey(User, related_name='notification_from', on_delete=models.CASCADE, null=True)
+    article = models.ForeignKey('mainapp.Article', on_delete=models.CASCADE, related_name='+', blank=True, null=True)
+    comment = models.ForeignKey('mainapp.Comment', on_delete=models.CASCADE, related_name='+', blank=True, null=True)
+    date = models.DateTimeField(default=timezone.now)
+    user_has_seen = models.BooleanField(default=False)
+
+    def __str__(self):
+        return str(self.from_user) + ": " + self.get_notification_type_display()+ ' ' + str(self.to_user)
