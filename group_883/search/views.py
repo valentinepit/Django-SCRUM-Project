@@ -23,9 +23,12 @@ class SearchResultsView(ListView):
         my_filter = self.filter_set_class(self.request.GET, queryset=articles)
         filter_data = my_filter.qs
         popular_tags = get_popular_tags(Article.objects.all())
+        print(filter_data)
+        # for item in filter_data:
+        #     print(item)
         context.update({
             'search_data': query,
-            'count': len(Article.objects.filter(title__icontains=query)),
+            'count': len(filter_data),
             'myFilter': my_filter,
             'articles': filter_data,
             'popular_tags': popular_tags,
