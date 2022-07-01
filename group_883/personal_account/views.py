@@ -4,6 +4,7 @@ from django.contrib.auth.models import Group
 from django.core.mail import send_mail
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect
+from django.contrib.sessions.models import Session
 from django.contrib import auth
 from django.urls import reverse
 from django.views.generic import ListView, UpdateView, CreateView, DeleteView, DetailView, View
@@ -26,6 +27,8 @@ def login(request):
             if 'next' in request.POST.keys():
                 return HttpResponseRedirect(request.POST['next'])
             return HttpResponseRedirect(reverse('mainapp:index'))
+    if request.method == 'POST' and request.user.is_active == False:
+        return render(request, 'personal_account/is_blocked.html')
 
     context = {
         'login_form': login_form,
@@ -91,7 +94,7 @@ class ListArticle(ListView):
     paginate_by = 2
 
     def get_queryset(self):
-        return Article.objects.filter(user=self.request.user).filter(is_active=True)
+        return Article.objects.filter(user=self.request.user)
 
 
 class CreateArticle(CreateView):
@@ -205,12 +208,40 @@ def delete_user(request, pk):
 class PostNotification(View):
     def get(self, request, notification_pk, article_pk, *args, **kwargs):
         notification = Notification.objects.get(pk=notification_pk)
-        #article = Article.objects.get(pk=article_pk)
+        # article = Article.objects.get(pk=article_pk)
 
         notification.user_has_seen = True
         notification.save()
 
         return redirect('mainapp:article', pk=article_pk)
+
+
+def block_render(request, pk):
+    blocked_user = User.objects.get(pk=pk)
+    context = {
+        'blocked_user': blocked_user,
+    }
+    return render(request, 'personal_account/block.html', context)
+
+
+def blocked(request, pk):
+    user_blocked = User.objects.get(pk=pk)
+    context = {
+        'blocked_user': user_blocked,
+    }
+    if (user_blocked and user_blocked.is_active and request.user.groups.filter(
+            name='admins')) or (
+            user_blocked and user_blocked.is_active and request.user.groups.filter(name='moderators')):
+        user_blocked.is_active = False
+        user_blocked.save()
+        [s.delete() for s in Session.objects.all() if s.get_decoded().get('_auth_user_id') == user_blocked.id]
+        return render(request, 'personal_account/block.html', context)
+    elif (user_blocked and user_blocked.is_active == False and request.user.groups.filter(
+            name='admins')) or (
+            user_blocked and user_blocked.is_active == False and request.user.groups.filter(name='moderators')):
+        user_blocked.is_active = True
+        user_blocked.save()
+        return render(request, 'personal_account/block.html', context)
 
 
 class FollowNotification(View):
