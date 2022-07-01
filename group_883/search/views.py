@@ -11,7 +11,7 @@ from mainapp.views import get_popular_tags
 class SearchResultsView(ListView):
     model = Article
     template_name = 'search.html'
-    paginate_by = 2
+    paginate_by = 3
     filter_set_class = ArticleFilter
 
     def get_context_data(self, **kwargs):
@@ -25,7 +25,7 @@ class SearchResultsView(ListView):
         popular_tags = get_popular_tags(Article.objects.all())
         context.update({
             'search_data': query,
-            'count': len(Article.objects.filter(title__icontains=query)),
+            'count': len(filter_data),
             'myFilter': my_filter,
             'articles': filter_data,
             'popular_tags': popular_tags,
@@ -34,7 +34,7 @@ class SearchResultsView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        return ArticleFilter(self.request.GET, queryset=queryset).qs
+        return ArticleFilter(self.request.GET, queryset=queryset).qs.filter(is_active=True)
 
     def get_filterset_kwargs(self, filter_set_class):
         kwargs = super(SearchResultsView, self).get_filterset_kwargs(filter_set_class)
