@@ -94,7 +94,7 @@ class ListArticle(ListView):
     paginate_by = 2
 
     def get_queryset(self):
-        return Article.objects.filter(user=self.request.user).filter(is_active=True)
+        return Article.objects.filter(user=self.request.user)
 
 
 class CreateArticle(CreateView):
