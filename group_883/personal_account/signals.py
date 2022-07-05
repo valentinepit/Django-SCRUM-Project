@@ -20,7 +20,7 @@ def create_comment(sender, instance, created, **kwargs):
             if instance.is_parent and instance.article.user != instance.user:
                 Notification.objects.get_or_create(notification_type=2, to_user=instance.article.user,
                                                    from_user=instance.user, object_id=instance.id, user_has_seen=False)
-            elif instance.parent.user!=instance.user:
+            elif instance.parent and instance.parent.user != instance.user:
                 Notification.objects.get_or_create(notification_type=4, to_user=instance.parent.user,
                                                    from_user=instance.user, object_id=instance.id, user_has_seen=False)
 
