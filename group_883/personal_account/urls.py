@@ -2,8 +2,8 @@ from django.contrib.auth.views import PasswordChangeView, PasswordChangeDoneView
 from django.urls import path, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from personal_account.views import register, edit, login, logout, CreateArticle, EditArticle, ListArticle, \
-    DeleteArticle, password_change_done, UserDetail, user, verify, create_permissions, delete_permissions, delete_user,\
-    PostNotification, FollowNotification, RemoveNotification
+    DeleteArticle, password_change_done, UserDetail, user, verify, create_permissions, delete_permissions, delete_user, \
+    PostNotification, FollowNotification, RemoveNotification, blocked, block_render
 
 app_name = 'personal_account'
 
@@ -27,8 +27,11 @@ urlpatterns = [
     path('moder_perm/<int:pk>/', create_permissions, name='create_permissions'),
     path('del_perm/<int:pk>/', delete_permissions, name='delete_permissions'),
     path('del_user/<int:pk>/', delete_user, name='delete_user'),
+    path('block_user/<int:pk>/', blocked, name='blocked'),
+    path('block/<int:pk>/', block_render, name='block_render'),
 
-    path('notification/<int:notification_pk>/article/<int:article_pk>', PostNotification.as_view(), name='article-notification'),
+    path('notification/<int:notification_pk>/article/<int:article_pk>', PostNotification.as_view(),
+         name='article-notification'),
     path('notification/<int:notification_pk>/profile/<int:profile_pk>', FollowNotification.as_view(),
          name='follow-notification'),
     path('notification/delete/<int:notification_pk>', RemoveNotification.as_view(), name='notification-delete'),

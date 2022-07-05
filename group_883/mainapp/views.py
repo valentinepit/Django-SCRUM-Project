@@ -12,21 +12,21 @@ from personal_account.models import User
 
 def index(request):
     categories = Category.objects.all()
-    articles = Article.objects.filter(is_active=True)
-    read_now = Article.objects.all()
-    news = Article.objects.all()
+    articles = Article.objects.filter(is_active=True, moderated=1)
+    read_now = Article.objects.filter(is_active=True, moderated=1).order_by('-id')
+    news = Article.objects.filter(is_active=True, moderated=1).order_by('-id')
     tags = Tag.objects.all()
-    best_of_week = Article.objects.all()
+    best_of_week = Article.objects.filter(is_active=True, moderated=1).order_by('-likes')
     best_authors = User.objects.order_by('-total_likes', '-id')[:5]
     popular_tags = get_popular_tags(articles)
     context = {
         'title': 'Home',
         'categories': categories,
-        'articles': articles,
-        'read_now': read_now,
-        'news': news,
+        'articles': articles[:20],
+        'read_now': read_now[:7],
+        'news': news[:7],
         'tags': tags[:10],
-        'best_of_week': best_of_week,
+        'best_of_week': best_of_week[:3],
         'best_authors': best_authors,
         'popular_tags': popular_tags,
     }
@@ -47,17 +47,17 @@ def category(request, pk, page=1):
     tags = Tag.objects.all()
 
     if pk == 0:
-        category_articles = Article.objects.all()
+        category_articles = Article.objects.filter(is_active=True, moderated=1)
         current_category = {
             'title': 'Все потоки',
             'pk': 0
         }
     else:
         current_category = get_object_or_404(Category, pk=pk)
-        category_articles = Article.objects.filter(category__pk=current_category.pk).filter(is_active=True)
+        category_articles = Article.objects.filter(category__pk=current_category.pk).filter(is_active=True, moderated=1)
 
-    newest_article = Article.objects.all().last()
-    articles = Article.objects.all().order_by('-id')
+    newest_article = Article.objects.filter(is_active=True, moderated=1).last()
+    articles = Article.objects.filter(is_active=True, moderated=1).order_by('-id')
 
     items_on_page = 10
     paginator = Paginator(category_articles, items_on_page)
@@ -87,9 +87,9 @@ def article(request, pk):
     categories = Category.objects.all()
     tags = Tag.objects.all()
     article = get_object_or_404(Article, pk=pk)
-    similar_articles = Article.objects.filter(category__pk=article.category.pk).exclude(pk=article.pk)
-    newest_article = Article.objects.all().last()
-    articles = Article.objects.all().order_by('-id')
+    similar_articles = Article.objects.filter(category__pk=article.category.pk, is_active=True, moderated=1).exclude(pk=article.pk)
+    newest_article = Article.objects.filter(is_active=True, moderated=1).last()
+    articles = Article.objects.filter(is_active=True, moderated=1).order_by('-id')
     tags = Tag.objects.all()
 
     comments = Comment.objects.filter(article__pk=article.pk, is_parent=True)
