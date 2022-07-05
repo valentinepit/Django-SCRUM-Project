@@ -29,19 +29,21 @@ class User(AbstractUser):
 
 
 class Notification(models.Model):
-    # 0 = @moderator, 1 = Like_Article, 2 = Comment, 3 = Like_Comment, 4 = Reply
+    # 0 = @moderator, 1 = Like_Article, 2 = Comment, 3 = Like_Comment, 4 = Reply, 5 = Moderated
     AT_MODERATOR = 0
     LIKE_ARTICLE = 1
     COMMENT = 2
     LIKE_COMMENT = 3
     REPLY = 4
+    MODERATED = 5
 
     NOTE = (
         (AT_MODERATOR, '@moderator'),
         (LIKE_ARTICLE, 'Like_Article'),
         (COMMENT, 'Comment'),
         (LIKE_COMMENT, 'Like_Comment'),
-        (REPLY, 'Reply')
+        (REPLY, 'Reply'),
+        (MODERATED, 'Moderated'),
     )
     notification_type = models.IntegerField(choices=NOTE, verbose_name='Тип')
     to_user = models.ForeignKey(User, related_name='notification_to', on_delete=models.CASCADE, null=True)
