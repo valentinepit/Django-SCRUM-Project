@@ -11,16 +11,14 @@
                             <img src="{% static 'images/logo-light.png' %}" class="img-responsive" alt="Logo">
                         </figure>
                         <p class="brand-description"></p>
-                        <a href="page.html" class="btn btn-magz white">О нас<i
+                        <a href="{% url 'mainapp:help' %}" class="btn btn-magz white">О нас<i
                                 class="ion-ios-arrow-thin-right"></i></a>
                     </div>
                 </div>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="block">
-                    <h1 class="block-title">Популярные теги
-{#                        <div class="right"><a href="#">Все <i class="ion-ios-arrow-thin-right"></i></a></div>#}
-                    </h1>
+                    <h1 class="block-title">Популярные теги</h1>
                     <div class="block-body">
                         <ul class="tags">
                             {% for tag in tags%}
@@ -124,9 +122,9 @@
                 <div class="block">
                     <div class="block-body no-margin">
                         <ul class="footer-nav-horizontal">
-                            <li><a href="index.html">Главная</a></li>
-                            <li><a href="contact.html">Контакты</a></li>
-                            <li><a href="page.html">О нас</a></li>
+                            <li><a href="{% url 'mainapp:index' %}">Главная</a></li>
+                            <li><a href="{% url 'mainapp:help' %}">Контакты</a></li>
+                            <li><a href="{% url 'mainapp:help' %}">О нас</a></li>
                         </ul>
                     </div>
                 </div>
@@ -135,7 +133,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="copyright">
-                    COPYRIGHT &copy; MAGZ {% now "Y" %}. ALL RIGHT RESERVED.
+                    COPYRIGHT &copy; 883-Group-SIX {% now "Y" %}. ALL RIGHT RESERVED.
                 </div>
             </div>
         </div>

@@ -10,17 +10,19 @@
                     <h4>Ваши данные</h4>
                     <h5>{{ user.username }}</h5>
                     <img src="/media/{{ user.foto }}" width="300px" height="300px">
-                    <p>{{ user.first_name }}</p>
-                    <p>{{ user.last_name }}</p>
-                    <p>{{ user.email }}</p>
-                    <ul><a href="{% url 'personal_account:edit' user.pk %}" class="btn btn-primary">Изменить данные профиля</a>
-                    </ul>
-                    <ul><a href="{% url 'personal_account:list_article' %}" class="btn btn-primary">Список ваших
-                        статей</a></ul>
-                    <ul><a href="{% url 'personal_account:create_article' %}" class="btn btn-primary">Создать
-                        статью</a></ul>
-                    <ul><a href="{% url 'personal_account:password_change' %}" class="btn btn-primary">Изменить
-                        пароль</a></ul>
+                    <p>Имя: {{ user.first_name }}</p>
+                    <p>Фамилия: {{ user.last_name }}</p>
+                    <p>Почта: {{ user.email }}</p>
+                    <div class="user_buttons">
+                        <a href="{% url 'personal_account:edit' user.pk %}" class="btn btn-primary">Изменить данные
+                            профиля</a>
+                        <a href="{% url 'personal_account:list_article' %}" class="btn btn-primary">Список ваших
+                            статей</a>
+                        <a href="{% url 'personal_account:create_article' %}" class="btn btn-primary">Создать
+                            статью</a>
+                        <a href="{% url 'personal_account:password_change' %}" class="btn btn-primary">Изменить
+                            пароль</a>
+                    </div>
                 </div>
             </div>
         </div>

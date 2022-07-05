@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
+from django.contrib.auth.views import PasswordChangeView
 from django.core.mail import send_mail
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect
@@ -13,6 +14,7 @@ from group_883.settings import BASE_URL
 from personal_account.forms import UserLoginForm, UserRegisterForm, UserEditForm, CreateArticleForm
 from mainapp.models import Article
 from .models import User, Notification
+from mainapp.views import get_popular_tags
 
 
 def login(request):
@@ -33,6 +35,7 @@ def login(request):
     context = {
         'login_form': login_form,
         'next_param': next_param,
+        'popular_tags': get_popular_tags(),
     }
 
     return render(request, 'personal_account/login.html', context)
@@ -53,7 +56,8 @@ def register(request):
     else:
         register_form = UserRegisterForm()
     context = {
-        'register_form': register_form
+        'register_form': register_form,
+        'popular_tags': get_popular_tags(),
     }
     return render(request, 'personal_account/register.html', context)
 
@@ -72,6 +76,7 @@ def edit(request, pk):
     context = {
         'edit_form': edit_form,
         'current_user': User.objects.get(pk=pk),
+        'popular_tags': get_popular_tags(),
 
     }
     return render(request, 'personal_account/edit.html', context)
@@ -79,13 +84,23 @@ def edit(request, pk):
 
 @login_required()
 def user(request):
-    return render(request, 'personal_account/user.html')
+    context = {
+        'popular_tags': get_popular_tags(),
+    }
+    return render(request, 'personal_account/user.html', context)
 
 
 class UserDetail(DetailView):
     model = User
     template_name = 'personal_account/our_account.html'
     context_object_name = 'current_user'
+
+    def get_context_data(self, **kwargs):
+        context = super(UserDetail, self).get_context_data(**kwargs)
+        context.update({
+            'popular_tags': get_popular_tags(),
+        })
+        return context
 
 
 class ListArticle(ListView):
@@ -95,6 +110,13 @@ class ListArticle(ListView):
 
     def get_queryset(self):
         return Article.objects.filter(user=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super(ListArticle, self).get_context_data(**kwargs)
+        context.update({
+            'popular_tags': get_popular_tags(),
+        })
+        return context
 
 
 class CreateArticle(CreateView):
@@ -109,6 +131,13 @@ class CreateArticle(CreateView):
         form.instance.user = self.request.user
         return super().form_valid(form)
 
+    def get_context_data(self, **kwargs):
+        context = super(CreateArticle, self).get_context_data(**kwargs)
+        context.update({
+            'popular_tags': get_popular_tags(),
+        })
+        return context
+
 
 class EditArticle(UpdateView):
     model = Article
@@ -122,6 +151,13 @@ class EditArticle(UpdateView):
         if user.groups.filter(name='admins') or user.groups.filter(name='moderators') or user.groups.filter(
                 name='test_group'):
             return True
+
+    def get_context_data(self, **kwargs):
+        context = super(EditArticle, self).get_context_data(**kwargs)
+        context.update({
+            'popular_tags': get_popular_tags(),
+        })
+        return context
 
     def dispatch(self, request, *args, **kwargs):
         obj = self.get_object()
@@ -148,6 +184,13 @@ class DeleteArticle(DeleteView):
             return redirect('personal_account:list_article')
         elif self.request.user.has_perm('mainapp.delete_article') or obj.user == self.request.user:
             return super(DeleteArticle, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(DeleteArticle, self).get_context_data(**kwargs)
+        context.update({
+            'popular_tags': get_popular_tags(),
+        })
+        return context
 
 
 def password_change_done(request):
@@ -263,3 +306,12 @@ class RemoveNotification(View):
         notification.save()
 
         return HttpResponse('Success', content_type='text/plain')
+
+
+class PasswordChange(PasswordChangeView):
+    def get_context_data(self, **kwargs):
+        context = super(PasswordChange, self).get_context_data(**kwargs)
+        context.update({
+            'popular_tags': get_popular_tags(),
+        })
+        return context

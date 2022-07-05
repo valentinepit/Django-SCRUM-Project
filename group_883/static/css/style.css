@@ -4210,3 +4210,22 @@ blockquote {
 	transition: 0.3s;
 	cursor: pointer;
 }
+
+/*new styles*/
+
+.user_buttons {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+}
+.user_buttons a {
+    margin-bottom: 10px;
+  }
+
+.w3ls-bot{
+  margin-top: 10px;
+}
+
+.registration_choice {
+  padding-left: 0;
+}

@@ -1,90 +1,88 @@
 {% extends 'mainapp/base.html' %}
 {% load static %}
 {% block content %}
-<body>
-<section class="search">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-9">
-                <div class="row">
-                    {% for object in object_list %}
-                    {% if object.is_active %}
-                    <article class="col-md-12 article-list">
-                        <div class="inner ">
-                            <figure>
-                                <img src="/media/{{ object.image }}">
-                            </figure>
-                            <div class="details ">
-                                <div class="detail">
-                                    <div class="category">
-                                        <a href="#">{{ object.tag }}</a>
+    <body>
+    <section class="search">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-9">
+                    <div class="row">
+                        {% for object in object_list %}
+                            {% if object.is_active %}
+                                <article class="col-md-12 article-list">
+                                    <div class="inner ">
+                                        <figure>
+                                            <img src="/media/{{ object.image }}">
+                                        </figure>
+                                        <div class="details ">
+                                            <div class="detail">
+                                                <div class="category">
+                                                    <a href="#">{{ object.tag }}</a>
+                                                </div>
+                                                <time>{{ object.created_at }}</time>
+                                            </div>
+                                            <h1><a href="{% url 'mainapp:article' object.pk %}">{{ object.title }}</a>
+                                            </h1>
+                                            </h1>
+                                            <p>
+                                                {{ object.short_desc }}
+                                            </p>
+                                            <footer>
+                                               <div class="article_nav">
+                                                    <a class="btn btn-primary more"
+                                                       href="{% url 'personal_account:edit_article' object.pk %}">
+                                                        <div>Изменить</div>
+                                                        <div><i class="ion-ios-arrow-thin-right"></i></div>
+                                                    </a>
+                                                    <a class="btn btn-primary more"
+                                                       href="{% url 'personal_account:delete_article' object.pk %}">
+                                                        <div>Удалить</div>
+                                                        <div><i class="ion-ios-arrow-thin-right"></i></div>
+                                                    </a>
+                                               </div>
+                                            </footer>
+                                        </div>
                                     </div>
-                                    <time>{{ object.created_at }}</time>
+                                </article>
+                            {% else %}
+                                <ul>
+                                    <article class="col-md-12 article-list">
+                                        <div class="inner ">
+                                            <a class="btn btn-primary more"
+                                               href="{% url 'personal_account:delete_article' object.pk %}">
+                                                <div>Восстановить</div>
+                                                <div><i class="ion-ios-arrow-thin-right"></i></div>
+                                            </a>
+                                    </article>
                                 </div>
-                                <h1><a href="{% url 'mainapp:article' object.pk %}">{{ object.title }}</a>
-                                </h1>
-                                </h1>
-                                <p>
-                                    {{ object.short_desc }}
-                                </p>
-                                <footer>
-                                    <ul>
-                                        <a class="btn btn-primary more"
-                                           href="{% url 'personal_account:edit_article' object.pk %}">
-                                            <div>Изменить</div>
-                                            <div><i class="ion-ios-arrow-thin-right"></i></div>
-                                        </a>
-                                    </ul>
-                                    <ul>
-                                        <a class="btn btn-primary more"
-                                           href="{% url 'personal_account:delete_article' object.pk %}">
-                                            <div>Удалить</div>
-                                            <div><i class="ion-ios-arrow-thin-right"></i></div>
-                                        </a>
-                                    </ul>
-                                </footer>
-                            </div>
-                        </div>
-                    </article>
-                    {% else %}
-                    <h4 class="name">Статья {{object.title}} удалена</h4>
-                    <ul>
-                        <ul>
-                            <a class="btn btn-primary more"
-                               href="{% url 'personal_account:delete_article' object.pk %}">
-                                <div>Восстановить</div>
-                                <div><i class="ion-ios-arrow-thin-right"></i></div>
-                            </a>
-                        </ul>
-                </div>
-                </ul>
-                {% endif %}
-                {% endfor %}
-
-                <div class="col-md-12 text-center">
-                    <ul class="pagination">
-                        {% if page_obj.has_previous %}
-                        <li class="prev"><a
-                                href="?page={{ page_obj.previous_page_number }}"><i
-                                class="ion-ios-arrow-left"></i></a></li>
-                        {% endif %}
-                        {% for i in paginator.page_range %}
-                        <li {% if page_obj.number == i %}class="active" {% endif %}><a
-                                href="?page={{ i }}">{{ i }}</a></li>
+                                </ul>
+                            {% endif %}
                         {% endfor %}
-                        {% if page_obj.has_next %}
-                        <li class="next"><a
-                                href="?page={{ page_obj.next_page_number }}"><i
-                                class="ion-ios-arrow-right"></i></a></li>
-                        {% endif %}
-                    </ul>
-                    <div class="pagination-help-text">
-                    </div>
-                </div>
 
+                    <div class="col-md-12 text-center">
+                        <ul class="pagination">
+                            {% if page_obj.has_previous %}
+                                <li class="prev"><a
+                                        href="?page={{ page_obj.previous_page_number }}"><i
+                                        class="ion-ios-arrow-left"></i></a></li>
+                            {% endif %}
+                            {% for i in paginator.page_range %}
+                                <li {% if page_obj.number == i %}class="active"{% endif %}><a
+                                        href="?page={{ i }}">{{ i }}</a></li>
+                            {% endfor %}
+                            {% if page_obj.has_next %}
+                                <li class="next"><a
+                                        href="?page={{ page_obj.next_page_number }}"><i
+                                        class="ion-ios-arrow-right"></i></a></li>
+                            {% endif %}
+                        </ul>
+                        <div class="pagination-help-text">
+                        </div>
+                    </div>
+
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
 {% endblock %}
