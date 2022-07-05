@@ -113,20 +113,20 @@
                             <p>{{ article.body }}</p>
                         </div>
                         {% if user.is_authenticated and user.pk == article.user.pk or user|has_group:'admins' or user|has_group:'moderators' %}
-                            <ul>
+                                <div class="article_nav">
                                 <a class="btn btn-primary more"
                                    href="{% url 'personal_account:edit_article' article.pk %}">
                                     <div>Изменить</div>
                                     <div><i class="ion-ios-arrow-thin-right"></i></div>
                                 </a>
-                            </ul>
-                            <ul>
+
+
                                 <a class="btn btn-primary more"
                                    href="{% url 'personal_account:delete_article' article.pk %}">
                                     <div>Удалить</div>
                                     <div><i class="ion-ios-arrow-thin-right"></i></div>
                                 </a>
-                            </ul>
+                            </div>
                         {% endif %}
                         <footer class="d-flex">
                             <div class="col">

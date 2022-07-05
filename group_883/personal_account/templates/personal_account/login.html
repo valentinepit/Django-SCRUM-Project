@@ -13,13 +13,14 @@
                         {% if next_param %}
                             <input type="hidden" name="next" value="{{ next_param }}">
                         {% endif %}
-                        <button class="btn btn-primary" type="submit">Войти</button>
-                        <ul>
-                            <a href="{% url 'social:begin' 'vk-oauth2' %}?next=/">Войти через вк</a>
-                        </ul>
-                        <ul>
-                            <a href="{% url 'personal_account:register' %}">Регистрация</a>
-                        </ul>
+                        <button class="btn btn-primary btn-block" type="submit">Войти</button>
+                        <div class="form-group text-center">
+                            <span class="text-muted">У вас нет аккаунта?</span> <a
+                                href="{% url 'personal_account:register' %}">Регистрация</a>
+                        </div>
+                        <div class="form-group text-center">
+                            <a href="{% url 'social:begin' 'vk-oauth2' %}">Авторизоваться через VK</a>
+
                     </form>
                 </div>
             </div>
