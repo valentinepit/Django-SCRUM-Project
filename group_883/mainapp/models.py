@@ -33,6 +33,7 @@ class Article(models.Model):
     # статусы: 0 - модератор не проверял, 1 - модератор проверил и одобрил, 2 - модератор проверил и отклонил
     moderated = models.SmallIntegerField(default=0, verbose_name='Статус модерации')
 
+    @property
     def total_likes(self):
         return self.likes.count()
 

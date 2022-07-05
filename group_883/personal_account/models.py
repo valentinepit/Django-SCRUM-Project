@@ -29,23 +29,34 @@ class User(AbstractUser):
 
 
 class Notification(models.Model):
-    # 0 = @moderator, 1 = Like, 2 = Comment
+    # 0 = @moderator, 1 = Like_Article, 2 = Comment, 3 = Like_Comment, 4 = Reply
     AT_MODERATOR = 0
-    LIKE = 1
+    LIKE_ARTICLE = 1
     COMMENT = 2
+    LIKE_COMMENT = 3
+    REPLY = 4
 
     NOTE = (
         (AT_MODERATOR, '@moderator'),
-        (LIKE, 'Like'),
+        (LIKE_ARTICLE, 'Like_Article'),
         (COMMENT, 'Comment'),
+        (LIKE_COMMENT, 'Like_Comment'),
+        (REPLY, 'Reply')
     )
     notification_type = models.IntegerField(choices=NOTE, verbose_name='Тип')
     to_user = models.ForeignKey(User, related_name='notification_to', on_delete=models.CASCADE, null=True)
     from_user = models.ForeignKey(User, related_name='notification_from', on_delete=models.CASCADE, null=True)
-    article = models.ForeignKey('mainapp.Article', on_delete=models.CASCADE, related_name='+', blank=True, null=True)
-    comment = models.ForeignKey('mainapp.Comment', on_delete=models.CASCADE, related_name='+', blank=True, null=True)
+    object_id = models.IntegerField(verbose_name="id комментария/поста", blank=True, null=True)
     date = models.DateTimeField(default=timezone.now)
     user_has_seen = models.BooleanField(default=False)
 
+    def get_article(self):
+        from mainapp.models import Article
+        return Article.objects.get(id=self.object_id)
+
+    def get_comment(self):
+        from mainapp.models import Comment
+        return Comment.objects.get(id=self.object_id)
+
     def __str__(self):
-        return str(self.from_user) + ": " + self.get_notification_type_display()+ ' ' + str(self.to_user)
+        return str(self.from_user) + ": " + self.get_notification_type_display() + ' ' + str(self.to_user)
