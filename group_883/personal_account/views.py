@@ -77,7 +77,6 @@ def edit(request, pk):
         'edit_form': edit_form,
         'current_user': User.objects.get(pk=pk),
         'popular_tags': get_popular_tags(),
-
     }
     return render(request, 'personal_account/edit.html', context)
 
