@@ -11,31 +11,32 @@
                     {{ current_user.groups.all.0 }} {{ current_user.username }}
                     <br>
                     <img src="/media/{{ current_user.foto }}" width="300px" height="300px">
-                    <p>{{ current_user.first_name }}</p>
-                    <p>{{ current_user.last_name }}</p>
-                    <p>{{ current_user.email }}</p>
-                    {% if user|has_group:'admins' %}
+                                        <p>Имя: {{ user.first_name }}</p>
+                    <p>Фамилия: {{ user.last_name }}</p>
+                    <p>Почта: {{ user.email }}</p>
+
+                    <div class="user_buttons">
                         {% if user|has_group:'admins' %}
-                        <a href="{% url 'personal_account:edit' current_user.pk %}" class="btn btn-primary">Изменить данные
-                            профиля</a>
+                            {% if user|has_group:'admins' %}
+                                <a href="{% url 'personal_account:edit' current_user.pk %}" class="btn btn-primary">Изменить
+                                    данные
+                                    профиля</a>
                             {% endif %}
-                        {% if current_user|has_group:'moderators' or not user|has_group:'admins' %}
-                            <a href="{% url 'personal_account:delete_permissions' current_user.pk %}">
-                                <button class="btn btn-primary" type="submit">разжаловать</button>
-                            </a>
-                        {% else %}
-                            <a href="{% url 'personal_account:create_permissions' current_user.pk %}">
-                                <button class="btn btn-primary" type="submit" style="margin-top: 10px"> Назначить модератором</button>
+                            {% if current_user|has_group:'moderators' or not user|has_group:'admins' %}
+                                <a href="{% url 'personal_account:delete_permissions' current_user.pk %}" class="btn btn-primary" type="submit">разжаловать
+                                </a>
+                            {% else %}
+                                <a href="{% url 'personal_account:create_permissions' current_user.pk %}" class="btn btn-primary" type="submit" >
+                                    Назначить модератором
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                        {% if user|has_group:'admins' %}
+                            <a href="{% url 'personal_account:delete_user' current_user.pk %}" class="btn btn-primary" type="submit">
+                                Удалить пользователя
                             </a>
                         {% endif %}
-                    {% endif %}
-                    {% if user|has_group:'admins' %}
-                        <a href="{% url 'personal_account:delete_user' current_user.pk %}">
-                            <button class="btn btn-primary" type="submit" style="margin-top: 10px">Удалить
-                                пользователя
-                            </button>
-                        </a>
-                    {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
