@@ -43,3 +43,13 @@ def update_article(sender, instance, action, pk_set=None, **kwargs):
             if u != instance.user:
                 Notification.objects.get_or_create(notification_type=1, to_user=instance.user,
                                                    from_user=u, object_id=instance.id, user_has_seen=False)
+
+
+@receiver(pre_save, sender=Article)
+def update_article_moderated(sender, instance: Article, **kwargs):
+    if instance.id is not None:  # new object will be created
+        previous = Article.objects.get(id=instance.id)
+        if previous.moderated != instance.moderated:  # field will be updated
+            Notification.objects.get_or_create(notification_type=5, to_user=instance.user, object_id=instance.id,
+                                               user_has_seen=False)
+
