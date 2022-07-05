@@ -4173,7 +4173,7 @@ blockquote {
 .dropdown-content {
 	position: absolute;
 	background-color: #f1f1f1;
-	min-width: 350px;
+	min-width: 160px;
 	box-shadow: 0px 8px 8px 0px rgba(0,0,0,0.2);
 	z-index: 1;
 	font-size: 0.9rem;
@@ -4184,6 +4184,7 @@ blockquote {
 	padding: 12px 16px;
 	text-decoration: none;
 	display: block;
+	float: left;
 }
 
 .dropdown-content a:hover {
