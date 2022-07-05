@@ -28,20 +28,18 @@
                                                 {{ object.short_desc }}
                                             </p>
                                             <footer>
-                                                <ul>
+                                               <div class="article_nav">
                                                     <a class="btn btn-primary more"
                                                        href="{% url 'personal_account:edit_article' object.pk %}">
                                                         <div>Изменить</div>
                                                         <div><i class="ion-ios-arrow-thin-right"></i></div>
                                                     </a>
-                                                </ul>
-                                                <ul>
                                                     <a class="btn btn-primary more"
                                                        href="{% url 'personal_account:delete_article' object.pk %}">
                                                         <div>Удалить</div>
                                                         <div><i class="ion-ios-arrow-thin-right"></i></div>
                                                     </a>
-                                                </ul>
+                                               </div>
                                             </footer>
                                         </div>
                                     </div>

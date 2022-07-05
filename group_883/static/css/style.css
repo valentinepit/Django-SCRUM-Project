@@ -4174,7 +4174,7 @@ blockquote {
 	position: absolute;
 	background-color: #f1f1f1;
 	min-width: 350px;
-	box-shadow: 0px 8px 8px 0px rgba(0,0,0,0.2)
+	box-shadow: 0px 8px 8px 0px rgba(0,0,0,0.2);
 	z-index: 1;
 	font-size: 0.9rem;
 }
@@ -4208,4 +4208,23 @@ blockquote {
 	color: rgb(180, 25, 25);
 	transition: 0.3s;
 	cursor: pointer;
+}
+
+/*new styles*/
+
+.user_buttons {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+}
+.user_buttons a {
+    margin-bottom: 10px;
+  }
+
+.w3ls-bot{
+  margin-top: 10px;
+}
+
+.registration_choice {
+  padding-left: 0;
 }
