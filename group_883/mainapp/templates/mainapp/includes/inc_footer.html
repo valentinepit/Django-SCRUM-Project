@@ -21,8 +21,8 @@
                     <h1 class="block-title">Популярные теги</h1>
                     <div class="block-body">
                         <ul class="tags">
-                            {% for tag in tags%}
-                            <li><a href="#">{{ tag.title }}</a></li>
+                            {% for pk, name in popular_tags.items %}
+                                <li><a href="{% url 'search:search_results_with_pk' pk %}">{{ name }}</a></li>
                             {% endfor %}
                         </ul>
                     </div>

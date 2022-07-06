@@ -109,7 +109,7 @@ class ListArticle(ListView):
     paginate_by = 2
 
     def get_queryset(self):
-        return Article.objects.filter(user=self.request.user)
+        return Article.objects.filter(user=self.request.user).order_by('-is_active')
 
     def get_context_data(self, **kwargs):
         context = super(ListArticle, self).get_context_data(**kwargs)

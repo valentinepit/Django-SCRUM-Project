@@ -57,7 +57,7 @@ def category(request, pk, page=1):
         category_articles = Article.objects.filter(category__pk=current_category.pk).filter(is_active=True)
 
     newest_article = Article.objects.all().last()
-    articles = Article.objects.all().order_by('-id')
+    articles = category_articles.order_by('-id')
 
     items_on_page = 10
     paginator = Paginator(category_articles, items_on_page)
@@ -89,8 +89,8 @@ def article(request, pk):
     tags = Tag.objects.all()
     article = get_object_or_404(Article, pk=pk)
     similar_articles = Article.objects.filter(category__pk=article.category.pk).exclude(pk=article.pk)
-    newest_article = Article.objects.all().last()
     articles = Article.objects.filter(is_active=True).order_by('-id')
+    newest_article = articles.last()
     tags = Tag.objects.all()
 
     comments = Comment.objects.filter(article__pk=article.pk, is_parent=True)
