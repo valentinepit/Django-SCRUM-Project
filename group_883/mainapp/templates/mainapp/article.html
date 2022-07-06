@@ -113,7 +113,7 @@
                             <p>{{ article.body }}</p>
                         </div>
                         {% if user.is_authenticated and user.pk == article.user.pk or user|has_group:'admins' or user|has_group:'moderators' %}
-                                <div class="article_nav">
+                            <div class="article_nav">
                                 <a class="btn btn-primary more"
                                    href="{% url 'personal_account:edit_article' article.pk %}">
                                     <div>Изменить</div>
@@ -186,7 +186,9 @@
                         </figure>
                         <div class="details">
                             {#                        <div class="job">Web Developer</div>#}
-                            <h3 class="name"><a href={% url 'personal_account:our_user' article.user.pk%} class="name">{{ article.user }}</a></h3>
+                            <h3 class="name"><a
+                                    href={% url 'personal_account:our_user' article.user.pk %} class="name">{{ article.user }}</a>
+                            </h3>
                             <p>{{ article.user.description }}</p>
                             <ul class="social trp sm">
                                 <li>
