@@ -237,3 +237,14 @@ def get_links_menu():
             cache.set(key, links_menu)
         return links_menu
     return Category.objects.filter(is_active=True)
+
+def get_tags():
+    if settings.LOW_CACHE:
+        key = 'tags'
+        tags = cache.get(key)
+        if tags is None:
+            tags = Tag.objects.all()
+            cache.set(key,tags)
+        return tags
+    return Tag.objects.all()
+
