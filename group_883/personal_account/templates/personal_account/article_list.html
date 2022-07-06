@@ -28,7 +28,7 @@
                                                 {{ object.short_desc }}
                                             </p>
                                             <footer>
-                                               <div class="article_nav">
+                                                <div class="article_nav">
                                                     <a class="btn btn-primary more"
                                                        href="{% url 'personal_account:edit_article' object.pk %}">
                                                         <div>Изменить</div>
@@ -39,23 +39,20 @@
                                                         <div>Удалить</div>
                                                         <div><i class="ion-ios-arrow-thin-right"></i></div>
                                                     </a>
-                                               </div>
+                                                </div>
                                             </footer>
                                         </div>
                                     </div>
                                 </article>
                             {% else %}
-                                <ul>
-                                    <article class="col-md-12 article-list">
-                                        <div class="inner ">
-                                            <a class="btn btn-primary more"
-                                               href="{% url 'personal_account:delete_article' object.pk %}">
-                                                <div>Восстановить</div>
-                                                <div><i class="ion-ios-arrow-thin-right"></i></div>
-                                            </a>
-                                    </article>
-                                </div>
-                                </ul>
+                                {#                                <ul>#}
+                                <article class="col-md-12 article-list">
+                                        <h2> {{ object.title }}</h2>
+                                        <a class="btn btn-primary more"
+                                           href="{% url 'personal_account:delete_article' object.pk %}">
+                                            Восстановить</a>
+                                    </a>
+                                </article>
                             {% endif %}
                         {% endfor %}
 

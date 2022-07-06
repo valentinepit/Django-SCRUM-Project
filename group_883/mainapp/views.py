@@ -14,7 +14,7 @@ def index(request):
     categories = Category.objects.all()
     articles = Article.objects.filter(is_active=True)
     read_now = articles
-    news = Article.objects.filter(is_active=True).order_by('-created_at')[:5]
+    news = articles.order_by('-created_at')[:5]
     tags = Tag.objects.all()
     best_of_week = articles
     best_authors = User.objects.order_by('-total_likes', '-id')[:5]
@@ -90,7 +90,7 @@ def article(request, pk):
     article = get_object_or_404(Article, pk=pk)
     similar_articles = Article.objects.filter(category__pk=article.category.pk).exclude(pk=article.pk)
     newest_article = Article.objects.all().last()
-    articles = Article.objects.all().order_by('-id')
+    articles = Article.objects.filter(is_active=True).order_by('-id')
     tags = Tag.objects.all()
 
     comments = Comment.objects.filter(article__pk=article.pk, is_parent=True)
