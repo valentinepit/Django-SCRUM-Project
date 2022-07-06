@@ -18,6 +18,7 @@ class User(AbstractUser):
     email = models.EmailField(("email address"), blank=True)
     activate_key = models.CharField(max_length=128, verbose_name='Ключ активации', blank=True, null=True)
     activate_key_expired = models.DateTimeField(blank=True, null=True)
+    is_private = models.BooleanField(default=False)
 
     def __str__(self):
         return self.first_name if self.first_name else self.username

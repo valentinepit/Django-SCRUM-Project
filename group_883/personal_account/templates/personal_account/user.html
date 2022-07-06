@@ -22,6 +22,13 @@
                             статью</a>
                         <a href="{% url 'personal_account:password_change' %}" class="btn btn-primary">Изменить
                             пароль</a>
+                        {% if user.is_private is True %}
+                            <a href="{% url 'personal_account:change_status' user.pk %}" class="btn btn-primary">Сделать
+                                страницу открытой</a>
+                        {% else %}
+                            <a href="{% url 'personal_account:change_status' user.pk %}" class="btn btn-primary">Сделать
+                                страницу приватной</a>
+                        {% endif %}
                     </div>
                 </div>
             </div>

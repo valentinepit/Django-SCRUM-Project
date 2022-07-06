@@ -96,11 +96,22 @@ class UserDetail(DetailView):
     context_object_name = 'current_user'
 
     def get_context_data(self, **kwargs):
+        if kwargs["object"].is_private:
+            self.privat_account(kwargs["object"])
         context = super(UserDetail, self).get_context_data(**kwargs)
         context.update({
             'popular_tags': get_popular_tags(),
         })
         return context
+
+    def privat_account(self, _user):
+        print(f"{_user.is_private=}")
+        return HttpResponseRedirect(reverse('personal_account:privat_account'))
+
+
+def privat_account(request):
+    print("HELLO")
+    return render(request, 'personal_account/privat_account.html')
 
 
 class ListArticle(ListView):
@@ -315,3 +326,10 @@ class PasswordChange(PasswordChangeView):
             'popular_tags': get_popular_tags(),
         })
         return context
+
+
+def change_privat_status(request, pk):
+    _user = User.objects.get(pk=pk)
+    _user.is_private = False if _user.is_private is True else True
+    _user.save()
+    return redirect('personal_account:user')

@@ -1,14 +1,21 @@
 {% extends 'mainapp/base.html' %}
 
 {% block content %}
-    <ul class="tags">
-    {% for item in articles_to_moderate %}
-            <div class="d-flex">
-            <div class="moderation">{{ item.title }}</div>
-            <a class="btn btn" href="{% url 'mainapp:aritcle_to_moderate' item.pk %}">Просмотреть</a>
-            <a class="btn btn" href="{% url 'mainapp:accept_article' item.pk %}">Принять</a>
-            <a class="btn btn" href="{% url 'mainapp:reject_article' item.pk %}">Отклонить</a>
+    <div class="container">
+        <div class="moderation">
+            Список статей для модерации:
         </div>
-    {% endfor %}
-    </ul>
+        <ul class="tags">
+            {% for item in articles_to_moderate %}
+                <li>
+                    <div class="d-flex">
+                        <div class="moderation">{{ item.title }}</div>
+                        <a class="btn btn" href="{% url 'mainapp:aritcle_to_moderate' item.pk %}">Просмотреть</a>
+                        <a class="btn btn" href="{% url 'mainapp:accept_article' item.pk %}">Принять</a>
+                        <a class="btn btn" href="{% url 'mainapp:reject_article' item.pk %}">Отклонить</a>
+                    </div>
+                <li>
+            {% endfor %}
+        </ul>
+    </div>
 {% endblock %}
