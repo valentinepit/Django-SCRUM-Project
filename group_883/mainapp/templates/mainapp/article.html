@@ -110,7 +110,7 @@
                                 </figure>
                             </div>
 
-                            <p>{{ article.body }}</p>
+                            <p>{{ article.body|safe }}</p>
                         </div>
                         {% if user.is_authenticated and user.pk == article.user.pk or user|has_group:'admins' or user|has_group:'moderators' %}
                                 <div class="article_nav">

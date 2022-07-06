@@ -1,5 +1,6 @@
 from django.db import models
 from personal_account.models import User
+from ckeditor.fields import RichTextField
 
 
 class Category(models.Model):
@@ -24,7 +25,8 @@ class Article(models.Model):
     tag = models.ForeignKey(Tag, on_delete=models.PROTECT, blank=True, null=True, verbose_name='Тэг')
     title = models.CharField(verbose_name='Заголовок', max_length=250)
     short_desc = models.CharField(verbose_name='Краткое описание', max_length=500, blank=True)
-    body = models.TextField(verbose_name='Текст')
+    # body = models.TextField(verbose_name='Текст')
+    body = RichTextField(blank=True, null=True, verbose_name='Текст')
     image = models.ImageField(upload_to='image_article', verbose_name='Фото', blank=True)
     like = models.BigIntegerField(verbose_name='Количество лайков', default=0)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
