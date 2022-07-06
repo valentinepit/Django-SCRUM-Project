@@ -4229,3 +4229,10 @@ blockquote {
 .registration_choice {
   padding-left: 0;
 }
+
+.privat{
+  min-height: 500px;
+  background-image: url('../images/privat.jpg');
+  background-repeat: no-repeat;
+  background-size: 70% 100%;
+}

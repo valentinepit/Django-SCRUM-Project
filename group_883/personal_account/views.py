@@ -97,21 +97,12 @@ class UserDetail(DetailView):
 
     def get_context_data(self, **kwargs):
         if kwargs["object"].is_private:
-            self.privat_account(kwargs["object"])
+            self.template_name = 'personal_account/privat_account.html'
         context = super(UserDetail, self).get_context_data(**kwargs)
         context.update({
             'popular_tags': get_popular_tags(),
         })
         return context
-
-    def privat_account(self, _user):
-        print(f"{_user.is_private=}")
-        return HttpResponseRedirect(reverse('personal_account:privat_account'))
-
-
-def privat_account(request):
-    print("HELLO")
-    return render(request, 'personal_account/privat_account.html')
 
 
 class ListArticle(ListView):
