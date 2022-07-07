@@ -1,4 +1,6 @@
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.core.cache   import cache
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Count
 from django.http import HttpResponseRedirect
@@ -11,13 +13,13 @@ from personal_account.models import User
 
 
 def index(request):
-    categories = Category.objects.all()
-    articles = Article.objects.filter(is_active=True)
+    categories = get_links_menu()
+    articles = Article.objects.filter(is_active=True).select_related()
     read_now = articles
-    news = Article.objects.filter(is_active=True).order_by('-created_at')[:5]
+    news = Article.objects.filter(is_active=True).order_by('-created_at')[:5].select_related()
     tags = Tag.objects.all()
     best_of_week = articles
-    best_authors = User.objects.order_by('-total_likes', '-id')[:5]
+    best_authors = User.objects.order_by('-total_likes', '-id')[:5].prefetch_related()
     context = {
         'title': 'Home',
         'categories': categories,
@@ -43,7 +45,7 @@ def get_popular_tags():
 
 
 def category(request, pk, page=1):
-    categories = Category.objects.all()
+    categories = get_links_menu()
     tags = Tag.objects.all()
 
     if pk == 0:
@@ -54,10 +56,11 @@ def category(request, pk, page=1):
         }
     else:
         current_category = get_object_or_404(Category, pk=pk)
-        category_articles = Article.objects.filter(category__pk=current_category.pk).filter(is_active=True)
+        category_articles = Article.objects.filter(category__pk=current_category.pk).filter(
+            is_active=True).select_related()
 
     newest_article = Article.objects.all().last()
-    articles = Article.objects.all().order_by('-id')
+    articles = Article.objects.all().order_by('-id').select_related()
 
     items_on_page = 10
     paginator = Paginator(category_articles, items_on_page)
@@ -85,15 +88,14 @@ def category(request, pk, page=1):
 
 
 def article(request, pk):
-    categories = Category.objects.all()
-    tags = Tag.objects.all()
+    categories = get_links_menu()
     article = get_object_or_404(Article, pk=pk)
-    similar_articles = Article.objects.filter(category__pk=article.category.pk).exclude(pk=article.pk)
+    similar_articles = Article.objects.filter(category__pk=article.category.pk).exclude(pk=article.pk).select_related()
     newest_article = Article.objects.all().last()
-    articles = Article.objects.all().order_by('-id')
+    articles = Article.objects.all().order_by('-id').select_related()
     tags = Tag.objects.all()
 
-    comments = Comment.objects.filter(article__pk=article.pk, is_parent=True)
+    comments = Comment.objects.filter(article__pk=article.pk, is_parent=True).select_related()
     new_comment = None
 
     if request.method == 'POST':
@@ -172,7 +174,7 @@ def comment_create(request, article_pk, pk):
 
 @login_required
 def moderation_list(request):
-    categories = Category.objects.all()
+    categories = get_links_menu()
     articles_to_moderate = Article.objects.filter(moderated=0).filter(is_active=True)
     context = {
         'categories': categories,
@@ -184,7 +186,7 @@ def moderation_list(request):
 
 @login_required
 def article_to_moderate(request, pk):
-    categories = Category.objects.all()
+    categories = get_links_menu()
     article = get_object_or_404(Article, pk=pk)
     context = {
         'categories': categories,
@@ -211,8 +213,9 @@ def reject_article(request, pk):
 
     return HttpResponseRedirect(reverse('mainapp:moderation_list'))
 
+
 def help(request):
-    categories = Category.objects.all()
+    categories = get_links_menu()
     newest_article = Article.objects.all().last()
     articles = Article.objects.all().order_by('-id')
     context = {
@@ -223,3 +226,25 @@ def help(request):
         'popular_tags': get_popular_tags(),
     }
     return render(request, 'mainapp/help.html', context)
+
+
+def get_links_menu():
+    if settings.LOW_CACHE:
+        key = 'categories'
+        links_menu = cache.get(key)
+        if links_menu is None:
+            links_menu = Category.objects.filter(is_active=True)
+            cache.set(key, links_menu)
+        return links_menu
+    return Category.objects.filter(is_active=True)
+
+def get_tags():
+    if settings.LOW_CACHE:
+        key = 'tags'
+        tags = cache.get(key)
+        if tags is None:
+            tags = Tag.objects.all()
+            cache.set(key,tags)
+        return tags
+    return Tag.objects.all()
+
