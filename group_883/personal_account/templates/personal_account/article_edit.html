@@ -3,12 +3,13 @@
 
 {% block content %}
     <div class="container">
-        <div class="box-wrapper">
-            <div class="box box-border">
+        <div class="box-wrapper" id="article-wrapper">
+            <div class="box box-border" id="article-body">
                 <div class="box-body">
                     <h4>Измените статью</h4>
                     <form action="{% url 'personal_account:edit_article' object.pk%}" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
+                        {{ form.media }}
                         {{ form.as_p }}
                         <button class="btn btn-primary" type="submit">Сохранить</button>
                     </form>

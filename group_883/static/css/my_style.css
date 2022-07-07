@@ -53,3 +53,11 @@
 .moderation {
     font-size: 22px;
 }
+
+#article-body {
+    width: 900px;
+}
+
+#article-wrapper {
+    margin: 0;
+}

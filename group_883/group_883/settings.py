@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'social_django',
     'crispy_forms',
     'django_filters',
+    'ckeditor',
     'debug_toolbar',
     'template_profiler_panel'
 ]
@@ -103,8 +104,8 @@ WSGI_APPLICATION = 'group_883.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'admin',
-        'USER': 'admin',
+        'NAME': 'group883',
+        'USER': 'postgres',
     }
 }
 
