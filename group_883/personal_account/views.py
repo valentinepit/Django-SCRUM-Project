@@ -247,17 +247,6 @@ def delete_user(request, pk):
     return render(request, 'personal_account/user_delete.html')
 
 
-class PostNotification(View):
-    def get(self, request, notification_pk, article_pk, *args, **kwargs):
-        notification = Notification.objects.get(pk=notification_pk)
-        # article = Article.objects.get(pk=article_pk)
-
-        notification.user_has_seen = True
-        notification.save()
-
-        return redirect('mainapp:article', pk=article_pk)
-
-
 def block_render(request, pk):
     blocked_user = User.objects.get(pk=pk)
     context = {
@@ -286,15 +275,15 @@ def blocked(request, pk):
         return render(request, 'personal_account/block.html', context)
 
 
-class FollowNotification(View):
-    def get(self, request, notification_pk, profile_pk, *args, **kwargs):
+class PostNotification(View):
+    def get(self, request, notification_pk, article_pk, *args, **kwargs):
         notification = Notification.objects.get(pk=notification_pk)
-        profile = User.objects.get(pk=profile_pk)
+        # article = Article.objects.get(pk=article_pk)
 
         notification.user_has_seen = True
         notification.save()
 
-        return redirect('profile', pk=profile_pk)
+        return redirect('mainapp:article', pk=article_pk)
 
 
 class RemoveNotification(View):

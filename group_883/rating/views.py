@@ -11,7 +11,7 @@ from mainapp.models import Article, Comment
 # Create your views here.
 @login_required
 def like(request, pk):
-    if 'login' in request.META.get('HTTP_REFERER'):
+    if 'login' in (request.META.get('HTTP_REFERER') or []):
         return redirect('mainapp:article', pk=pk)
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         article = get_object_or_404(Article, id=pk)
@@ -35,7 +35,7 @@ def like(request, pk):
 
 @login_required
 def like_comment(request, pk):
-    if 'login' in request.META.get('HTTP_REFERER'):
+    if 'login' in (request.META.get('HTTP_REFERER') or []):
         comment = get_object_or_404(Comment, id=pk)
         return redirect('mainapp:article', pk=comment.article.pk)
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
