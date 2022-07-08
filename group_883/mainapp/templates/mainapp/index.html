@@ -88,28 +88,29 @@
                         <div>Лучшее за неделю</div>
                     </div>
                     <div class="row">
-                        {% for item in best_of_week %}
+                        {% for article in best_of_week %}
                             <article class="col-md-12 article-list">
                                 <div class="inner">
                                     <figure>
-                                        <a href="{% url 'mainapp:article' item.pk %}">
-                                            <img src="/media/{{ item.image }}" alt="Sample Article">
+                                        <a href="{% url 'mainapp:article' article.pk %}">
+                                            <img src="/media/{{ article.image }}" alt="Sample Article">
                                         </a>
                                     </figure>
                                     <div class="details">
                                         <div class="detail">
                                             <div class="category">
-                                                <a href="{% url 'mainapp:category_page' item.category.pk 1 %}">{{ item.category }}</a>
+                                                <a href="{% url 'mainapp:category_page' article.category.pk 1 %}">{{ article.category }}</a>
                                             </div>
-                                            <div class="time">{{ item.created_at|date:'d E Y' }}</div>
+                                            <div class="time">{{ article.created_at|date:'d E Y' }}</div>
                                         </div>
-                                        <h1><a href="{% url 'mainapp:article' item.pk %}">{{ item.title }}</a></h1>
-                                        <p>{{ item.short_desc }}</p>
+                                        <h1><a href="{% url 'mainapp:article' article.pk %}">{{ article.title }}</a></h1>
+                                        <p>{{ article.short_desc }}</p>
                                         <footer>
-                                            <a href="#" class="love"><i class="ion-android-favorite-outline"></i>
-                                                <div>{{ item.like }}</div>
-                                            </a>
-                                            <a class="btn btn-primary more" href="{% url 'mainapp:article' item.pk %}">
+{#                                            <a href="#" class="love"><i class="ion-android-favorite-outline"></i>#}
+{#                                                <div>{{ item.total_likes }}</div>#}
+{#                                            </a>#}
+                                            {% include 'rating/includes/inc_likes.html' %}
+                                            <a class="btn btn-primary more" href="{% url 'mainapp:article' article.pk %}">
                                                 <div>Далее</div>
                                                 <div><i class="ion-ios-arrow-thin-right"></i></div>
                                             </a>
