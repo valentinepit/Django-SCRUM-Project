@@ -31,7 +31,5 @@ urlpatterns = [
     path('del_user/<int:pk>/', delete_user, name='delete_user'),
 
     path('notification/<int:notification_pk>/article/<int:article_pk>', PostNotification.as_view(), name='article-notification'),
-    path('notification/<int:notification_pk>/profile/<int:profile_pk>', FollowNotification.as_view(),
-         name='follow-notification'),
     path('notification/delete/<int:notification_pk>', RemoveNotification.as_view(), name='notification-delete'),
 ]

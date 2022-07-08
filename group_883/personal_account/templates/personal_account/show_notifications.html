@@ -14,7 +14,7 @@
 				</div>
 				{% elif notification.notification_type == 2 %}
 				<div class="dropdown-item-parent">
-					<a href="{% url 'personal_account:article-notification' notification.pk notification.get_article.pk %}">@{{ notification.from_user }} commented on your article</a>
+					<a href="{% url 'personal_account:article-notification' notification.pk notification.get_comment.article.pk %}">@{{ notification.from_user }} commented on your article</a>
 					<span class="dropdown-item-close" onclick="removeNotification(`{% url 'personal_account:notification-delete' notification.pk %}`, `{{ request.path }}`)">&times;</span>
 				</div>
 				{% endif %}
@@ -28,6 +28,22 @@
 					<a href="{% url 'personal_account:article-notification' notification.pk notification.get_comment.article.pk %}">@{{ notification.from_user }} replied to your comment</a>
 					<span class="dropdown-item-close" onclick="removeNotification(`{% url 'personal_account:notification-delete' notification.pk %}`, `{{ request.path }}`)">&times;</span>
 				</div>
+				{% elif notification.notification_type == 5 %}
+					{% with article=notification.get_article %}
+					{% if article.moderated == 1 %}
+					<div class="dropdown-item-parent">
+						<a href="{% url 'personal_account:article-notification' notification.pk article.pk %}">Your article '{{ article.title }}' has been approved</a>
+						<span class="dropdown-item-close" onclick="removeNotification(`{% url 'personal_account:notification-delete' notification.pk %}`, `{{ request.path }}`)">&times;</span>
+					</div>
+					{% elif article.moderated == 2 %}
+					<div class="dropdown-item-parent">
+						<a href="{% url 'personal_account:article-notification' notification.pk article.pk %}">Your article '{{ article.title }}' has not been approved</a>
+						<span class="dropdown-item-close" onclick="removeNotification(`{% url 'personal_account:notification-delete' notification.pk %}`, `{{ request.path }}`)">&times;</span>
+					</div>
+					{% endif %}
+					{% endwith %}
+
+
 				{% endif %}
 			{% endfor %}
 		</div>

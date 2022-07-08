@@ -19,7 +19,7 @@ class SearchResultsView(ListView):
         query = self.request.GET.get('q')
         if not query:
             query = ""
-        active_articles = Article.objects.filter(is_active=True)
+        active_articles = Article.objects.filter(is_active=True).select_related()
         articles = active_articles.filter(title__icontains=query).filter(is_active=True)
         my_filter = self.filter_set_class(self.request.GET, queryset=articles)
         filter_data = my_filter.qs
@@ -49,7 +49,7 @@ class SearchResultsView(ListView):
 class SearchByTagView(SearchResultsView):
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().select_related()
         return ArticleFilter(self.request.GET, queryset=queryset).qs.filter(tag=self.kwargs['pk'])
 
 
