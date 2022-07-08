@@ -3,7 +3,7 @@ from django.urls import path, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from personal_account.views import register, edit, login, logout, CreateArticle, EditArticle, ListArticle, \
     DeleteArticle, password_change_done, UserDetail, user, verify, create_permissions, delete_permissions, delete_user,\
-    PostNotification, FollowNotification, RemoveNotification, PasswordChange, change_privat_status
+    PostNotification, RemoveNotification, PasswordChange, change_privat_status
 
 app_name = 'personal_account'
 
