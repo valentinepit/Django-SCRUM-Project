@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.core.cache   import cache
+from django.core.cache import cache
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Count
 from django.http import HttpResponseRedirect
@@ -14,20 +14,20 @@ from personal_account.models import User
 
 def index(request):
     categories = get_links_menu()
-    articles = Article.objects.filter(is_active=True).select_related()
+    articles = Article.objects.filter(is_active=True, moderated=1).select_related()
     read_now = articles
-    news = Article.objects.filter(is_active=True).order_by('-created_at')[:5].select_related()
+    news = Article.objects.filter(is_active=True, moderated=1).order_by('-created_at')[:5].select_related()
     tags = Tag.objects.all()
-    best_of_week = articles
+    best_of_week = articles.annotate(like_count=Count('likes')).order_by('-like_count')
     best_authors = User.objects.order_by('-total_likes', '-id')[:5].prefetch_related()
     context = {
         'title': 'Home',
         'categories': categories,
-        'articles': articles,
-        'read_now': read_now,
+        'articles': articles[:15],
+        'read_now': read_now[:5],
         'news': news,
         'tags': tags[:10],
-        'best_of_week': best_of_week,
+        'best_of_week': best_of_week[:4],
         'best_authors': best_authors,
         'popular_tags': get_popular_tags(),
     }
@@ -49,7 +49,7 @@ def category(request, pk, page=1):
     tags = Tag.objects.all()
 
     if pk == 0:
-        category_articles = Article.objects.filter(is_active=True)
+        category_articles = Article.objects.filter(is_active=True, moderated=1)
         current_category = {
             'title': 'Все потоки',
             'pk': 0
@@ -57,10 +57,10 @@ def category(request, pk, page=1):
     else:
         current_category = get_object_or_404(Category, pk=pk)
         category_articles = Article.objects.filter(category__pk=current_category.pk).filter(
-            is_active=True).select_related()
+            is_active=True, moderated=1).select_related()
 
-    newest_article = Article.objects.all().last()
-    articles = Article.objects.all().order_by('-id').select_related()
+    newest_article = Article.objects.filter(moderated=1).last()
+    articles = Article.objects.filter(moderated=1).order_by('-id').select_related()
 
     items_on_page = 10
     paginator = Paginator(category_articles, items_on_page)
@@ -90,9 +90,9 @@ def category(request, pk, page=1):
 def article(request, pk):
     categories = get_links_menu()
     article = get_object_or_404(Article, pk=pk)
-    similar_articles = Article.objects.filter(category__pk=article.category.pk).exclude(pk=article.pk).select_related()
-    newest_article = Article.objects.all().last()
-    articles = Article.objects.all().order_by('-id').select_related()
+    similar_articles = Article.objects.filter(category__pk=article.category.pk, moderated=1).exclude(pk=article.pk).select_related()
+    newest_article = Article.objects.filter(moderated=1).exclude(pk=article.pk).last()
+    articles = Article.objects.filter(moderated=1).exclude(pk=article.pk).order_by('-id').select_related()
     tags = Tag.objects.all()
 
     comments = Comment.objects.filter(article__pk=article.pk, is_parent=True).select_related()
